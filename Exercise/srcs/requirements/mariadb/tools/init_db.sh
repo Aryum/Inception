@@ -1,4 +1,5 @@
 #!/bin/bash
+#if anything fails it kills the script
 set -e
 
 echo "Initiating MariaDB"
@@ -12,11 +13,13 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 fi
 
 #stats the server skipping network since its not needed for startup
+#the mysqld is diferent from mysql the "d" is for the server without the "d" is client
 echo "	Starting MariaDB setup server"
-mysql --skip-networking --socket=/run/mysqld/mysqld.sock --user=mysql & pid="$!"
+mysqld --skip-networking --socket=/run/mysqld/mysqld.sock --user=mysql & pid="$!"
 
 if ! timeout 30s sh -c ' 
 	until mysqladmin --socket=/run/mysqld/mysqld.sock ping
+	do
 		sleep 1
 	done '; 
 then
@@ -28,3 +31,21 @@ echo "	MariaDB startup was successful"
 
 #run setup sql to create database and users
 
+echo "	Setting up SQl"
+#connects to database server as root using the socket we created
+#since its 1st setup it doesnt have a password yet and we dont need -p
+# '%' is the host wildcard that allows connection from any ip, can be restrained
+# flush privileges reloads the permissions tables to the changes take place immediately
+
+mysql --socket=/run/mysqld/mysqld.sock -u root << EOF
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
+CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+FLUSH PRIVILEGES;
+EOF
+
+echo "	Shutting down setup server "
+mysqladmin --socket=/run/mysqld/mysqld.sock -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
+
+wait "$pid" || true
