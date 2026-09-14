@@ -34,3 +34,6 @@ COPY tools/init_wordpress.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup_wordpress.sh
 
 EXPOSE 9000
+
+#makes it so the sh is always run at container startup
+ENTRYPOINT ["/usr/local/bin/ini_wp.sh"]

@@ -28,5 +28,3 @@ ENV MYSQL_ROOT_PASSWORD=root \
 #doesnt affect the image ports
 EXPOSE 3306
 
-#makes it so the sh is always run at container startup
-ENTRYPOINT ["/usr/local/bin/setup_wordpress.sh"]
