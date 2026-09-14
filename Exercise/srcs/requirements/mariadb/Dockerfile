@@ -1,7 +1,7 @@
 FROM debian:bookworm
 
 #installs mariadb removes unecessary files form updates
-RUN apt-get update && apt-get install -y --no-install-recomends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	mariadb-server \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -27,3 +27,6 @@ ENV MYSQL_ROOT_PASSWORD=root \
 #just tells the docker that it will listen from this port
 #doesnt affect the image ports
 EXPOSE 3306
+
+#makes it so the sh is always run at container startup
+ENTRYPOINT ["/usr/local/bin/setup_wordpress.sh"]
