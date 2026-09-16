@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #user is created when installing mariadb
 RUN mkdir -p /var/run/mysqld \
 	&& chown -R mysql:mysql /var/run/mysqld \
-	&& chmod u=rwx,g=rx,o=rx /var/run/mysqld
+	&& chmod 755 /var/run/mysqld
 
 #overrides maria db default config with our config
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/

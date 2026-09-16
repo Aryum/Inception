@@ -2,7 +2,8 @@
 set -e
 
 SSL_DIR=/etc/nginx/ssl
-CERT=/etc/nginx/ssl/nginx.crt
+CERT="${SSL_DIR}"/nginx.crt
+KEY="${SSL_DIR}"/nginx.key
 
 mkdir -p "${SSL_DIR}"
 
@@ -20,5 +21,21 @@ if cert_missing || cert_expired; then
 	#-x509 output self signed X509 certificate instde of signing request
 	#-nodes does not encrypt the private key so it can be stored at startup
 	#-newkey rsa:2048 creates new 2048 bit RSA private key along with cert
+	#-keyout specifies key outpath 
+	#-out specifies cert outpath
+	#-subj sets meta data, can set country etc not neeeded
+	#	only needed is CN (common Name) tgat us chcked against hostname
 	openssl req -x509 -nodes -days 30 -newkey rsa:2048 \
-		-key
+		-keyout "${KEY}" \ 
+		-out "${CERT}" \
+		-subj "/CN=${DOMAIN_NAME}"
+
+	#read write owner
+	chmod 600 "${KEY}"
+	#read write owner group and others to readonly
+	chmod 644 "${CERT}"
+
+	echo "SSL certificate created at ${SSL_DIR}"
+else
+	echp "A valid certificate SSL already exists"
+fi
