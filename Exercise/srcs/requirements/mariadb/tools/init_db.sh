@@ -1,5 +1,8 @@
 #!/bin/bash
 #if anything fails it kills the script
+DB_DIR="/var/lib/mysql"
+SOCKET="/run/mysqld/mysqld.sock"
+
 set -e
 
 echo "Initiating MariaDB"
@@ -7,18 +10,20 @@ echo "Initiating MariaDB"
 #Create MySQL data directory
 #	--user specifies that user will be mysql
 #	--datadir sets the correct location for the db so it is in the correct place
-if [ ! -d "/var/lib/mysql/mysql" ]; then
+database_missing() { [ ! -d "${DB_DIR}/mysql" ]; }
+
+if database_missing; then
 	echo "	Creating data directory"
-	mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null
+	mysql_install_db --user=mysql --datadir=${DB_DIR} > /dev/null
 fi
 
 #stats the server skipping network since its not needed for startup
 #the mysqld is diferent from mysql the "d" is for the server without the "d" is client
 echo "	Starting MariaDB setup server"
-mysqld --skip-networking --socket=/run/mysqld/mysqld.sock --user=mysql & pid="$!"
+mysqld --skip-networking --socket=${SOCKET} --user=mysql & pid="$!"
 
 if ! timeout 30s sh -c ' 
-	until mysqladmin --socket=/run/mysqld/mysqld.sock ping
+	until mysqladmin --socket=${SOCKET}
 	do
 		sleep 1
 	done '; 
@@ -46,6 +51,6 @@ FLUSH PRIVILEGES;
 EOF
 
 echo "	Shutting down setup server "
-mysqladmin --socket=/run/mysqld/mysqld.sock -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
+mysqladmin --socket=${SOCKET} -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
 
 wait "$pid" || true

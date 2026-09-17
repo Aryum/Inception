@@ -37,5 +37,5 @@ if cert_missing || cert_expired; then
 
 	echo "SSL certificate created at ${SSL_DIR}"
 else
-	echp "A valid certificate SSL already exists"
+	echo "A valid certificate SSL already exists"
 fi

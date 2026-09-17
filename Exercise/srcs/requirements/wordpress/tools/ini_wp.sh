@@ -6,19 +6,26 @@ WP_PATH="/var/www/html"
 #gets password form secret file
 #checks if file exists and if has something
 #export makes it available for child processes
-if [ -n "$WORDPRESS_DB_PASSWORD_FILE" ] && [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; then
+passfile_exists() { [ -n "$WORDPRESS_DB_PASSWORD_FILE" ]; }
+passfile_hascontent() { [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; }
+
+
+if passfile_exists() && passfile_hascontent(); then
 	WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
 	export WORDPRESS_DB_PASSWORD
 fi
 
 echo "Initiating WordPress"
 
+
 #download and configure wordpress if it wasnt done already
-if [ ! -f "$WP_PATH/wp-config.php" ]; then
+config_exists() { [ ! -f "$WP_PATH/wp-config.php" ] }
+if config_exists(); then
+	TAR_FILE="/tmp/wordpress.tar.gz"
 	echo "	Downloading files"
-	wget -q https://wordpress.org/latest.tar.gz -O /tmp/wordpress.tar.gz
-	tar -xzf /tmp/wordpress.tar.gz -C /tmp
-	rm /tmp/wordpress.tar.gz
+	wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
+	tar -xzf ${TAR_FILE} -C /tmp
+	rm ${TAR_FILE}
 
 	#copies without ovewriting things
 	cp -rn /tmp/wordpress/* "$WP_PATH" || true
