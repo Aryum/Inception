@@ -39,3 +39,9 @@ if cert_missing || cert_expired; then
 else
 	echo "A valid certificate SSL already exists"
 fi
+
+#tests nginx config
+nginx -t
+
+echo "Starting Nginx"
+exec nginx

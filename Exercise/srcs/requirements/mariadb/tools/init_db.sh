@@ -22,14 +22,10 @@ fi
 echo "	Starting MariaDB setup server"
 mysqld --skip-networking --socket=${SOCKET} --user=mysql & pid="$!"
 
-if ! timeout 30s sh -c ' 
-	until mysqladmin --socket=${SOCKET}
-	do
-		sleep 1
-	done '; 
-then
-	echo "	MariaDB startup Failed"
-	exit 1
+#waits for 30 secs and tries a new conncetion after 3 secs if one is hanging
+if ! mysqladmin --socket="${SOCKET}" ping --silent --wait=30 --connect-timeout=3; then
+    echo "  MariaDB startup Failed"
+    exit 1
 fi
 
 echo "	MariaDB startup was successful"
