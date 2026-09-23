@@ -31,7 +31,7 @@ if config_exists(); then
 	cp -rn /tmp/wordpress/* "$WP_PATH" || true
 	rm -rf /tmp/wordpress
 	
-	#gets security salts from WP
+	#gets security salts from WP (salts is random data added to password for safer storing)
 	#-q quiet to supress wget logs
 	#-O- puts output in stdin so it can be stored in the var
 	WP_SALTS=$(wget -qO- https://api.wordpress.org/secret-key/1.1/salt/)
