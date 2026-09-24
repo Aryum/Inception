@@ -1,17 +1,79 @@
 services:
   mariadb:
     build:
-      context: requirements/mariadb
-    image: mariadb
+      context: ${IMAGE_DIR}/mariadb
+    image: mariadb:${IMAGE_TAG} #imagename:tag for id 
     container_name: mariadb
     networks:
-      - inception
+      - inception-network
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORDFILE: /run/secrets/db_root_password
+      MSQL_PASSWORDFILE: /run/secrets/db_password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
+    secrets:
+      - db_root_password
+      - db_password
+    restart: always
 
+  wordpress:
+    build:
+      context: ${IMAGE_DIR}/wordpress
+    image: wordpress:${IMAGE_TAG}
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    networks:
+      - inception-network
+    volumes:
+      - wordpress_data:/var/www/html
+    environment:
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+    secrets:
+      - db_password
+    restart: always
 
-      #finish up here check with clancker
+    nginx:
+      build:
+        context: ${IMAGE_DIR}/nginx
+      image: nginx:${IMAGE_TAG}
+      container_name: nginx
+      depends_on:
+        - wordpress
+      networks:
+        - inception-network
+      volumes:
+        - wordpress_data:/var/www/html
+      environment:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+      restart: always
+
+networks:
+  inception-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/mariadb
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/wordpress
+
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
