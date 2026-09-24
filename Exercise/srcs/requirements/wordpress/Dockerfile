@@ -28,10 +28,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /var/www/html
 
-COPY conf/ww.conf /etc/php/8.2/fpm/pool.d/
+COPY conf/www.conf /etc/php/8.2/fpm/pool.d/
 
-COPY tools/init_wordpress.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/setup_wordpress.sh
+COPY tools/ini_wp.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/ini_wp.sh
 
 EXPOSE 9000
 

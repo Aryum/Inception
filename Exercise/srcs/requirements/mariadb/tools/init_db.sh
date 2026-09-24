@@ -14,13 +14,13 @@ database_missing() { [ ! -d "${DB_DIR}/mysql" ]; }
 
 if database_missing; then
 	echo "	Creating data directory"
-	mysql_install_db --user=mysql --datadir=${DB_DIR} > /dev/null
+	mysql_install_db --user=mysql --datadir="${DB_DIR}" > /dev/null
 fi
 
 #stats the server skipping network since its not needed for startup
 #the mysqld is diferent from mysql the "d" is for the server without the "d" is client
 echo "	Starting MariaDB setup server"
-mysqld --skip-networking --socket=${SOCKET} --user=mysql & pid="$!"
+mysqld --skip-networking --socket="${SOCKET}" --user=mysql & pid="$!"
 
 #waits for 30 secs and tries a new conncetion after 3 secs if one is hanging
 if ! mysqladmin --socket="${SOCKET}" ping --silent --wait=30 --connect-timeout=3; then
@@ -46,7 +46,9 @@ GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
 
+#waits for the shutdown of setup server
+#the wait || true serves to wait until the shutdown actually finishes and 
+#|| true is so it disregards the return of the server and the sh doesnt fail through set -e
 echo "	Shutting down setup server "
-mysqladmin --socket=${SOCKET} -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
-
+timeout 30 env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
 wait "$pid" || true

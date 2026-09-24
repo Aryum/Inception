@@ -10,7 +10,7 @@ passfile_exists() { [ -n "$WORDPRESS_DB_PASSWORD_FILE" ]; }
 passfile_hascontent() { [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; }
 
 
-if passfile_exists() && passfile_hascontent(); then
+if passfile_exists && passfile_hascontent; then
 	WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
 	export WORDPRESS_DB_PASSWORD
 fi
@@ -20,7 +20,7 @@ echo "Initiating WordPress"
 
 #download and configure wordpress if it wasnt done already
 config_exists() { [ ! -f "$WP_PATH/wp-config.php" ] }
-if config_exists(); then
+if config_exists; then
 	TAR_FILE="/tmp/wordpress.tar.gz"
 	echo "	Downloading files"
 	wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}

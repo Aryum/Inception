@@ -2,7 +2,7 @@ services:
   mariadb:
     build:
       context: ${IMAGE_DIR}/mariadb
-    image: mariadb:${IMAGE_TAG} #imagename:tag for id 
+    image: mariadb:inception
     container_name: mariadb
     networks:
       - inception-network
@@ -21,7 +21,7 @@ services:
   wordpress:
     build:
       context: ${IMAGE_DIR}/wordpress
-    image: wordpress:${IMAGE_TAG}
+    image: wordpress:inception
     container_name: wordpress
     depends_on:
       - mariadb
@@ -39,10 +39,10 @@ services:
       - db_password
     restart: always
 
-    nginx:
+  nginx:
       build:
         context: ${IMAGE_DIR}/nginx
-      image: nginx:${IMAGE_TAG}
+      image: nginx:inception
       container_name: nginx
       depends_on:
         - wordpress
