@@ -52,3 +52,7 @@ EOF
 echo "	Shutting down setup server "
 timeout 30 env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
 wait "$pid" || true
+
+
+echo "Starting database"
+exec mysqld --user=mysql --datadir=/var/lib/mysql --socket="${SOCKET}"

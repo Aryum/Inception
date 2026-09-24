@@ -13,7 +13,7 @@ if domain_missing; then
 	exit 1
 fi
 
-cert_missing() { [ ! -f "${CERT}" ] }
+cert_missing() { [ ! -f "${CERT}" ]; }
 cert_expired() { ! openssl x509 -checkend 0 -noout -in "${CERT}" 2 >/dev/null; }
 if cert_missing || cert_expired; then 
 	echo "Creating SSL certificate for ${DOMAIN_NAME}"
@@ -26,9 +26,10 @@ if cert_missing || cert_expired; then
 	#-subj sets meta data, can set country etc not neeeded
 	#	only needed is CN (common Name) tgat us chcked against hostname
 	openssl req -x509 -nodes -days 30 -newkey rsa:2048 \
-		-keyout "${KEY}" \ 
+		-keyout "${KEY}" \
 		-out "${CERT}" \
-		-subj "/CN=${DOMAIN_NAME}"
+		-subj "/CN=${DOMAIN_NAME}" \
+		2>/dev/null
 
 	#read write owner
 	chmod 600 "${KEY}"
