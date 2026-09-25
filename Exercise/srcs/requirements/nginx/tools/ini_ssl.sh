@@ -1,9 +1,14 @@
 #!/bin/bash
 set -e
 
+
+
 SSL_DIR=/etc/nginx/ssl
 CERT="${SSL_DIR}"/nginx.crt
 KEY="${SSL_DIR}"/nginx.key
+
+
+echo "Initiating nginx"
 
 mkdir -p "${SSL_DIR}"
 

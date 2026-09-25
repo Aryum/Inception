@@ -11,6 +11,7 @@ FROM debian:bookworm
 #php8.2-xml -> used to process XML data
 #php8.2-intl -> for local aware formating
 #php8.2-soap -> integration of some plugins
+#certificates to be able to download with wget
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	php8.2-mysql \ 
 	php8.2-mbstring \
@@ -21,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	php8.2-soap \
 	php8.2-xml \
 	php8.2-zip \
+	ca-certificates \
 	wget \
 	curl \
 	&& ln -s /usr/sbin/php-fpm8.2 /usr/local/bin/php-fpm \

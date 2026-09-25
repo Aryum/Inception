@@ -2,7 +2,7 @@
 #if anything fails it kills the script
 DB_DIR="/var/lib/mysql"
 SOCKET="/run/mysqld/mysqld.sock"
-
+FIRST_BOOT=0
 set -e
 
 echo "Initiating MariaDB"
@@ -15,6 +15,7 @@ database_missing() { [ ! -d "${DB_DIR}/mysql" ]; }
 if database_missing; then
 	echo "	Creating data directory"
 	mysql_install_db --user=mysql --datadir="${DB_DIR}" > /dev/null
+	FIRST_BOOT=1
 fi
 
 #stats the server skipping network since its not needed for startup
@@ -31,20 +32,23 @@ fi
 echo "	MariaDB startup was successful"
 
 #run setup sql to create database and users
+if [ "$FIRST_BOOT" -eq 1 ]; then
+	echo "	Setting up SQl"
+	#connects to database server as root using the socket we created
+	#since its 1st setup it doesnt have a password yet and we dont need -p
+	# '%' is the host wildcard that allows connection from any ip, can be restrained
+	# flush privileges reloads the permissions tables to the changes take place immediately
 
-echo "	Setting up SQl"
-#connects to database server as root using the socket we created
-#since its 1st setup it doesnt have a password yet and we dont need -p
-# '%' is the host wildcard that allows connection from any ip, can be restrained
-# flush privileges reloads the permissions tables to the changes take place immediately
-
-mysql --socket=/run/mysqld/mysqld.sock -u root << EOF
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
-CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
-FLUSH PRIVILEGES;
+	mysql --socket=/run/mysqld/mysqld.sock -u root << EOF
+	ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+	CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
+	CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+	GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+	FLUSH PRIVILEGES;
 EOF
+else
+	echo "	Existing data detected - skipping SQL setup"
+fi
 
 #waits for the shutdown of setup server
 #the wait || true serves to wait until the shutdown actually finishes and 

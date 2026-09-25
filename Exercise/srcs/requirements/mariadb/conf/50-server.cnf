@@ -3,7 +3,7 @@
 
 #makes it listen to all network interfaces
 #default is 127.0.0.1, meaning only accepts connections from local host
-bind-adress = 0.0.0.0
+bind-address = 0.0.0.0
 
 #listening for for the db
 #its already the default one but its good practice
@@ -21,7 +21,7 @@ socket = /var/run/mysqld/mysqld.sock
 datadir = /var/lib/mysql
 
 #for writing error logs
-log-error = /var/log/mysq/error.log
+log-error = /var/log/mysql/error.log
 
 #path to file containng process id number of mysqld file
-pid-file = /var/run/mysqld-pid
+pid-file = /var/run/mysqld/mysqld-pid

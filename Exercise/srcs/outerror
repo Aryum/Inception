@@ -1,0 +1,43 @@
+ Container mariadb Starting 
+ Container mariadb Started 
+ Container wordpress Starting 
+[36mmariadb  | [0mmysqld: Can't create file '/var/log/mysql/error.log' (errno: 2 "No such file or directory")
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] Starting MariaDB 10.11.18-MariaDB-0+deb12u1 source revision 197f92bee02d8e836f529f37625be69b83e7acbd server_uid qWc2hqlVy7pI2YKU5cKSGNHlEf8= as process 7
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Compressed tables use zlib 1.2.13
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Number of transaction pools: 1
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Warning] mysqld: io_uring_queue_init() failed with EPERM: sysctl kernel.io_uring_disabled has the value 2, or 1 and the user of the process is not a member of sysctl kernel.io_uring_group. (see man 2 io_uring_setup).
+[36mmariadb  | [0mcreate_uring failed: falling back to libaio
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Using Linux native AIO
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: innodb_buffer_pool_size_max=8388608m, innodb_buffer_pool_size=128m
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Completed initialization of buffer pool
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: File system buffers for log disabled (block size=512 bytes)
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: End of log at LSN=44776
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: 128 rollback segments are active.
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Removed temporary tablespace data file: "./ibtmp1"
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: log sequence number 44776; transaction id 15
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Loading buffer pool(s) from /var/lib/mysql/ib_buffer_pool
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] Plugin 'FEEDBACK' is disabled.
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] InnoDB: Buffer pool(s) load completed at 260925 14:10:34
+[36mmariadb  | [0m2026-09-25 14:10:34 0 [Note] mysqld: ready for connections.
+[36mmariadb  | [0mVersion: '10.11.18-MariaDB-0+deb12u1'  socket: '/run/mysqld/mysqld.sock'  port: 0  Debian 12
+ Container wordpress Started 
+ Container nginx Starting 
+[32mnginx      | [0mx509: Use -help for summary.
+ Container nginx Started 
+[32mnginx      | [0mnginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+[32mnginx      | [0mnginx: configuration file /etc/nginx/nginx.conf test is successful
+[36mmariadb    | [0m2026-09-25 14:10:39 3 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
+[36mmariadb    | [0mGot error: Access denied for user 'root'@'localhost' (using password: NO)
+[36mmariadb    | [0m2026-09-25 14:10:39 4 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
+[36mmariadb    | [0mERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+ Compose Stopping Gracefully Stopping... press Ctrl+C again to force
+ Container nginx Stopping 
+ Container nginx Stopped 
+ Container wordpress Stopping 
+ Container wordpress Stopped 
+ Container mariadb Stopping 
+ Container mariadb Stopped 
+
