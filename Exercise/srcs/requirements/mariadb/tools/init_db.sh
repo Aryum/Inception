@@ -3,6 +3,9 @@
 DB_DIR="/var/lib/mysql"
 SOCKET="/run/mysqld/mysqld.sock"
 FIRST_BOOT=0
+MYSQL_ROOT_PASSWORD="$(cat "$MYSQL_ROOT_PASSWORD_FILE")"
+MYSQL_PASSWORD="$(cat "$MYSQL_PASSWORD_FILE")"
+
 set -e
 
 echo "Initiating MariaDB"
@@ -34,7 +37,6 @@ if database_missing; then
 	#since its 1st setup it doesnt have a password yet and we dont need -p
 	# '%' is the host wildcard that allows connection from any ip, can be restrained
 	# flush privileges reloads the permissions tables to the changes take place immediately
-
 	mysql --socket=/run/mysqld/mysqld.sock -u root << EOF
 	ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 	CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};

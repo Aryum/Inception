@@ -22,13 +22,9 @@ COPY tools/init_db.sh /usr/local/bin
 #sets permissions for the script file
 RUN chmod +x /usr/local/bin/init_db.sh
 
-ENV MYSQL_ROOT_PASSWORD=root \
-	MYSQL_USER=app_user \
-	MYSQL_PASSWORD=app_pass
-
 #just tells the docker that it will listen from this port
 #doesnt affect the image ports
 EXPOSE 3306
 
-ENTRYPOINT [ "init_db.sh" ]
+ENTRYPOINT [ "/usr/local/bin/init_db.sh" ]
 

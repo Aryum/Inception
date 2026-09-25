@@ -24,6 +24,7 @@ if cert_missing || cert_expired; then
 	echo "Creating SSL certificate for ${DOMAIN_NAME}"
 	
 	#-x509 output self signed X509 certificate instde of signing request
+	#since its self signed it gives an warning since it cannot get the certification froma trusted source even though connection is secure
 	#-nodes does not encrypt the private key so it can be stored at startup
 	#-newkey rsa:2048 creates new 2048 bit RSA private key along with cert
 	#-keyout specifies key outpath 

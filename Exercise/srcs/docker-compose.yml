@@ -9,8 +9,8 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORDFILE: /run/secrets/db_root_password
-      MSQL_PASSWORDFILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
     secrets:
