@@ -33,8 +33,7 @@ if cert_missing || cert_expired; then
 	openssl req -x509 -nodes -days 30 -newkey rsa:2048 \
 		-keyout "${KEY}" \
 		-out "${CERT}" \
-		-subj "/CN=${DOMAIN_NAME}" \
-		2>/dev/null
+		-subj "/CN=${DOMAIN_NAME}" 2>/dev/null
 
 	#read write owner
 	chmod 600 "${KEY}"

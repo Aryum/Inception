@@ -13,27 +13,23 @@ echo "Initiating MariaDB"
 database_missing() { [ ! -d "${DB_DIR}/mysql" ]; }
 
 if database_missing; then
-	echo "	Creating data directory"
+	echo "Creating data directory"
 	mysql_install_db --user=mysql --datadir="${DB_DIR}" > /dev/null
-	FIRST_BOOT=1
-fi
+	
+	#stats the server skipping network since its not needed for startup
+	#the mysqld is diferent from mysql the "d" is for the server without the "d" is client
+	echo "Starting MariaDB setup server"
+	mysqld --skip-networking --socket="${SOCKET}" --user=mysql & pid="$!"
 
-#stats the server skipping network since its not needed for startup
-#the mysqld is diferent from mysql the "d" is for the server without the "d" is client
-echo "	Starting MariaDB setup server"
-mysqld --skip-networking --socket="${SOCKET}" --user=mysql & pid="$!"
-
-#waits for 30 secs and tries a new conncetion after 3 secs if one is hanging
-if ! mysqladmin --socket="${SOCKET}" ping --silent --wait=30 --connect-timeout=3; then
-    echo "  MariaDB startup Failed"
-    exit 1
-fi
-
-echo "	MariaDB startup was successful"
-
-#run setup sql to create database and users
-if [ "$FIRST_BOOT" -eq 1 ]; then
-	echo "	Setting up SQl"
+	#waits for 30 secs and tries a new conncetion after 3 secs if one is hanging
+	if ! mysqladmin --socket="${SOCKET}" ping --silent --wait=30 --connect-timeout=3; then
+		echo "  MariaDB startup Failed"
+		exit 1
+	fi
+	echo "MariaDB startup was successful"
+	
+	echo "Setting up SQl"
+	#run setup sql to create database and users
 	#connects to database server as root using the socket we created
 	#since its 1st setup it doesnt have a password yet and we dont need -p
 	# '%' is the host wildcard that allows connection from any ip, can be restrained
@@ -46,17 +42,16 @@ if [ "$FIRST_BOOT" -eq 1 ]; then
 	GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
 	FLUSH PRIVILEGES;
 EOF
+
+	#waits for the shutdown of setup server
+	#the wait || true serves to wait until the shutdown actually finishes and 
+	#|| true is so it disregards the return of the server and the sh doesnt fail through set -e
+	echo "Shutting down setup server "
+	timeout 30 env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
+	wait "$pid" || true
 else
-	echo "	Existing data detected - skipping SQL setup"
+	echo "Existing data detected - skipping SQL setup"
 fi
-
-#waits for the shutdown of setup server
-#the wait || true serves to wait until the shutdown actually finishes and 
-#|| true is so it disregards the return of the server and the sh doesnt fail through set -e
-echo "	Shutting down setup server "
-timeout 30 env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
-wait "$pid" || true
-
 
 echo "Starting database"
 exec mysqld --user=mysql --datadir=/var/lib/mysql --socket="${SOCKET}"

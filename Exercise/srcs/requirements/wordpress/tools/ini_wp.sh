@@ -22,7 +22,7 @@ echo "Initiating WordPress"
 config_exists() { [ ! -f "$WP_PATH/wp-config.php" ]; }
 if config_exists; then
 	TAR_FILE="/tmp/wordpress.tar.gz"
-	echo "	Downloading files"
+	echo "Downloading files"
 	wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
 	tar -xzf ${TAR_FILE} -C /tmp
 	rm ${TAR_FILE}
@@ -72,9 +72,9 @@ EOF
 	find "$WP_PATH" -type f -exec chmod 640 {} \;
 	chown -R www-data:www-data "$WP_PATH"
 
-	echo "	WordPress setup sucessful"
+	echo "WordPress setup sucessful"
 else
-	echo "	WordPress already initalized"
+	echo "WordPress already initalized"
 fi
 
 echo "Starting PHP-FPM"
