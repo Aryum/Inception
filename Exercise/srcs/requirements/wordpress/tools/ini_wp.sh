@@ -45,6 +45,8 @@ if config_exists; then
 	#	require_conce loads the php file if it wasnt loadded yet
 	cat > "$WP_PATH/wp-config.php" << EOF
 <?php
+define('WP_HOME', 'https://${DOMAIN_NAME}');
+define('WP_SITEURL', 'https://${DOMAIN_NAME}');
 define('DB_NAME', '${WORDPRESS_DB_NAME}');
 define('DB_USER', '${WORDPRESS_DB_USER}');
 define('DB_PASSWORD', '${WORDPRESS_DB_PASSWORD}');

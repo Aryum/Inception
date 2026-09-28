@@ -35,6 +35,7 @@ services:
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      DOMAIN_NAME: ${DOMAIN_NAME}
     secrets:
       - db_password
     restart: always

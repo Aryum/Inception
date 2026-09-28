@@ -1,19 +1,20 @@
 #!/bin/bash
 #if anything fails it kills the script
+set -e
+
 DB_DIR="/var/lib/mysql"
 SOCKET="/run/mysqld/mysqld.sock"
 FIRST_BOOT=0
 MYSQL_ROOT_PASSWORD="$(cat "$MYSQL_ROOT_PASSWORD_FILE")"
 MYSQL_PASSWORD="$(cat "$MYSQL_PASSWORD_FILE")"
 
-set -e
 
 echo "Initiating MariaDB"
 
 #Create MySQL data directory
 #	--user specifies that user will be mysql
 #	--datadir sets the correct location for the db so it is in the correct place
-database_missing() { [ ! -d "${DB_DIR}/mysql" ]; }
+database_missing() { [ ! -d "${DB_DIR}/${MYSQL_DATABASE}" ]; }
 
 if database_missing; then
 	echo "Creating data directory"

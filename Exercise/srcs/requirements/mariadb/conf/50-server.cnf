@@ -25,3 +25,4 @@ log-error = /var/log/mysql/error.log
 
 #path to file containng process id number of mysqld file
 pid-file = /var/run/mysqld/mysqld-pid
+user = mysql

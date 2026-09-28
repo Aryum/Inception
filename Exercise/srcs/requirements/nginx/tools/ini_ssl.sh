@@ -48,6 +48,5 @@ fi
 
 #tests nginx config
 nginx -t
-
 echo "Starting Nginx"
 exec nginx
