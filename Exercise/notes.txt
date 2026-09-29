@@ -1,14 +1,15 @@
 Docker
 	Docker is a tool to create and run self contained enviroments, a way to develop applications with all their requisites without relying on whats on the host machine. These enviroments are called containers.
 	Docker compose is another tool that allows us to run multi-container applications from a single setup file (.yml), it declares which services we are using, how to build them (images), how they connect (network) and how they store data (mounts). It also allows for a more streamlined setup of our images, not needing to run a command with a long chain of flags.
-	They are lightweight since, unlike VMS, they use the host computer kernel system. The kernel makes them think a container is alone on the machine, everything it as access to, it is curated by the kernel, using namespaces to give an isolated view on processes network, filesystems, etc and cgroups to limit the resourses it can use. Their smaller sizes allows for better performance and sharability.
+	They are lightweight since, unlike VMS, that virtualizes the hardware through a hypervisor and have their own OS kernel, containers share the host kernal, only packaging the application and its dependencies. 
+	In a containers the kernel makes it think is alone on the machine, everything it as access to, it is curated by the kernel, using namespaces to give an isolated view on processes network, filesystems, etc and cgroups to limit the resourses it can use. Their smaller sizes allows for better performance and sharability.
 	But of course it has its own trade offs, compared to a VM, it has weaker isolation and security, since a kernel vunerability would give access to the host. A mix of VMS and containers is often used.
 	
 Images
 	To build a container you need an image, can be compared with a class in object oriented programing, and the container is the instantiation of that class. An image is read-only and layered, to create one you use a dockerfile with multiple commands, each one a step to adds to the image. Docker caches these layers, reusing every layer up to the first one that changed, only rebuilding from that point forward. This is why instructions that are changed often should be placed after ones that change rarely.
 
 Storage
-	When starting a container it uses the files and configuration provided by the image, it as access to a writable layer  that persists when starting/stoping it, but if the container is removed this data is also removed. This could be troublesome if we have data that we would like to persists between re-builds of the image.
+	When starting a container it uses the files and configuration provided by the image, it as access to a writable layer  that persists when starting/stoping it, but if the container is removed this data is also removed. This could be troublesome if we have data that we would like to persists when a conainer is recreated.
 	There are multiple ways to allow data to persist between builds.
 		Volume mounts:
 			Its managed by the docker daemon, independant of the host machine folder structure. It allows for better portability, and meant to be managed through docker commands.
@@ -20,14 +21,14 @@ Storage
 			Allows the contenst of another image available at a path chosen. Its readonly and isn't part of the container image.
 
 Network drivers
-	bridge is the default, 
-		allows conatiners to communicate with other containers in the same host
+	bridge is the default
+		allows conatiners to communicate with other containers in the same host, each as its own isolated IP and network namespace, only the ports that we setup
 	host
-		removes network isolation between container and host, use the host network directly
+		removes network isolation between container and host, use the host network directly. Without any port mapping and possible port conflicts.
 	overlay
-		allows the comunication between multiple hosts, giving the user control over IPv4 and IPv6
+		allows the comunication between multiple hosts.
 	macvlan
-		allows to assign a mac adress to a container making it appear as physical device, allowing control over LAN without opening ports
+		allows to assign a mac adress to a container making it appear as physical device, giving its own MAC and IP on the physical LAN, making it reachable directly without port publishing
 	none
 		completely isolate container from host and other containers
 
@@ -39,11 +40,18 @@ Inception
 			Application layer, it runs the php code, responsible for the website front end and backend, and talks with database
 		MariaDB:
 			Database to store our site content, users and settings, only reachable by wordpress
-	Each one is built with its own dockerfile, and follow a simillar structure:
-		Pull debian:bookworm as base image
-		Install the services and removes unecessary update cache files
-		Makes folders and changes permissions
-		Copies config files and setup scripts
-		Runs startup script
-	This startup script is responsible for starting up the services and checking if all required files are in place. 
-	One very important thing to note is the way the service is started since the first process (PID1) will be the ascestor of everyother process in the system (in this case container), it will be responsible for signal handling and reaping zombie processes. On the dockerfile we write ENTRYPOINT [ "path/to/start/script.sh" ] (exec mode, executing the script directly making it the PID1), this could also be done like ENTRYPOINT command param1 param1 (shell mode, starting up a shell first and then the command, making the shell PID1). In our startup scripts we end with the line exec "service name" so we replace the PID1 with the sercice (nginx needs a particular setting "daemon off" in the config file so it runs on the foreground)
+	DockerFile
+		Each one is built with its own dockerfile, and follow a simillar structure:
+			Pull debian:bookworm as base image
+			Install the services and removes unecessary update cache files
+			Makes folders and changes permissions
+			Copies config files and setup scripts
+			Runs startup script
+	Startup Script
+		This startup script is responsible for starting up the services and checking if all required files are in place. 
+		One very important thing to note is the way the service is started since the first process (PID1) will be the ascestor of everyother process in the system (in this case container), it will be responsible for signal handling and reaping zombie processes. On the dockerfile we write ENTRYPOINT [ "path/to/start/script.sh" ] (exec mode, executing the script directly making it the PID1), this could also be done like ENTRYPOINT command param1 param1 (shell mode, starting up a shell first and then the command, making the shell PID1). In our startup scripts we end with the line exec "service name" so we replace the PID1 with the sercice (nginx needs a particular setting "daemon off" in the config file so it runs on the foreground)
+	Docker Compose
+		For easier configuration of these services we use a docker compose file (.yml) as explained earlier, it streamlines our container initialization. On it we can setup a lot of things like network, volumes, enviroment variables and other things.
+		Since our containers might have sensible data like api keys and passwords, we need to be careful on how we handle it, if they were plainly written on the env it can be exposed through docker inspect, logs, child process. To fix this docker has secret mounts that pass files in read-only mode, mounted at /run/secrets/<secret name>. These are only granted to the containers that need it in the compose file, and will be read by the service startup script or the service itself. Other non sensitive data like domain name and usernames can be safely stay in .env.
+
+		We also setup our volumes. Using bind mount in the services is not allowed, but we still want to mount it at a specifc path on the host. A workarround is to declare a named volume using local driver and setting o: bind makes Docker use an existing host directory as the volumes storage, and since we are using an existing directory and not mounting a new one we set its type: none. Device its the host path where the data will live. The volume is still managed by docker but the data is stored at the set location
