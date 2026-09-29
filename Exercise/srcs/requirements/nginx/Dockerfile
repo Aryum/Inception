@@ -7,8 +7,6 @@ RUN apt-get update && apt-get install -y \
 
 #might need to change user id and/or group if errors come up
 #RUN usermod -u 33 www-data && groupmod -g 33 www-data
-
-
 RUN mkdir -p /etc/nginx/ssl
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
