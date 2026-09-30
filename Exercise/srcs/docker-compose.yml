@@ -41,21 +41,21 @@ services:
     restart: always
 
   nginx:
-      build:
-        context: ${IMAGE_DIR}/nginx
-      image: nginx:inception
-      container_name: nginx
-      depends_on:
-        - wordpress
-      networks:
-        - inception-network
-      volumes:
-        - wordpress_data:/var/www/html
-      ports:
-        - "443:443"
-      environment:
-        DOMAIN_NAME: ${DOMAIN_NAME}
-      restart: always
+    build:
+      context: ${IMAGE_DIR}/nginx
+    image: nginx:inception
+    container_name: nginx
+    depends_on:
+      - wordpress
+    networks:
+      - inception-network
+    volumes:
+      - wordpress_data:/var/www/html
+    ports:
+      - "443:443"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    restart: always
 
 networks:
   inception-network:

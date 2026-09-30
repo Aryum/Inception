@@ -27,9 +27,10 @@ Run from the <TODO>(addfolder)
 | Build and start | make | Builds and starts services|
 | Start | make up | Starts services |
 | Stop | make down| Stops services |
+| Restart | make restart | Restarts services |
 | Build Clean | make clean | Cleans temporary data |
 | Full Clean | make fclean | Cleans everything |
-| Restart | make re | Rebuilds and Restarts services|
+| Remake | make re | Rebuilds and Restarts services|
 
 **First launch** It will take longer since wordpress and mariadb need to download and setup some aditional files
 
@@ -56,4 +57,11 @@ The certificate is self-signed, so the browser will show a warning, since it can
 | Passwords | secrets/db_password.txt, secrets/db_root_password.txt|
 
 **Existing accounts**
- - Wordpress admin
+ - Wordpress
+  - admin <TODO>
+  - user <TODO>
+ - Mariadb <TODO>
+
+**Changing a password**
+1. Edit corresponding password file in 'secrets/'
+2. 
