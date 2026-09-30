@@ -13,6 +13,9 @@ passfile_hascontent() { [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; }
 if passfile_exists && passfile_hascontent; then
 	WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
 	export WORDPRESS_DB_PASSWORD
+else
+	echo "Password file not found or it's empty"
+	exit 1
 fi
 
 echo "Initiating WordPress"
