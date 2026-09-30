@@ -39,7 +39,7 @@ Inception
 		Wordpress:
 			Application layer, it runs the php code, responsible for the website front end and backend, and talks with database
 		MariaDB:
-			Database to store our site content, users and settings, only reachable by wordpress
+			Database server to store our site content, users and settings, only reachable by wordpress
 	DockerFile
 		Each one is built with its own dockerfile, and follow a simillar structure:
 			Pull debian:bookworm as base image
@@ -53,5 +53,4 @@ Inception
 	Docker Compose
 		For easier configuration of these services we use a docker compose file (.yml) as explained earlier, it streamlines our container initialization. On it we can setup a lot of things like network, volumes, enviroment variables and other things.
 		Since our containers might have sensible data like api keys and passwords, we need to be careful on how we handle it, if they were plainly written on the env it can be exposed through docker inspect, logs, child process. To fix this docker has secret mounts that pass files in read-only mode, mounted at /run/secrets/<secret name>. These are only granted to the containers that need it in the compose file, and will be read by the service startup script or the service itself. Other non sensitive data like domain name and usernames can be safely stay in .env.
-
 		We also setup our volumes. Using bind mount in the services is not allowed, but we still want to mount it at a specifc path on the host. A workarround is to declare a named volume using local driver and setting o: bind makes Docker use an existing host directory as the volumes storage, and since we are using an existing directory and not mounting a new one we set its type: none. Device its the host path where the data will live. The volume is still managed by docker but the data is stored at the set location
