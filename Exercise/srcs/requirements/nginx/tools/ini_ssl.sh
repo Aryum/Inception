@@ -41,9 +41,9 @@ if cert_missing || cert_expired; then
 	#read write owner group and others to readonly
 	chmod 644 "${CERT}"
 
-	echo "SSL certificate created at ${SSL_DIR}"
+	echo "Certificate created at ${SSL_DIR}"
 else
-	echo "A valid certificate SSL already exists"
+	echo "A valid certificate already exists"
 fi
 
 #tests nginx config

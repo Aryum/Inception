@@ -51,7 +51,7 @@ if config_exists; then
 define('WP_HOME', 'https://${DOMAIN_NAME}');
 define('WP_SITEURL', 'https://${DOMAIN_NAME}');
 define('DB_NAME', '${WORDPRESS_DB_NAME}');
-define('DB_USER', '${WORDPRESS_DB_USER}');
+define('DB_USER', '${MYSQL_WORDPRESS}');
 define('DB_PASSWORD', '${WORDPRESS_DB_PASSWORD}');
 define('DB_HOST', '${WORDPRESS_DB_HOST}');
 define('DB_CHARSET', 'utf8');

@@ -4,7 +4,6 @@ FROM debian:bookworm
 #php8.2-mysql -> for database connection
 #php8.2-mbstring -> to be able to handle multibyte chars
 #php8.2-fpm -> allows conncection to nginx
-
 #php8.2-gd -> image resizing
 #php8.2-zip -> install plugins and themes
 #php8.2-curl -> for core/plugin/theme updates
@@ -33,6 +32,7 @@ WORKDIR /var/www/html
 COPY conf/www.conf /etc/php/8.2/fpm/pool.d/
 
 COPY tools/ini_wp.sh /usr/local/bin/
+
 RUN chmod +x /usr/local/bin/ini_wp.sh
 
 EXPOSE 9000

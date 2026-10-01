@@ -3,26 +3,31 @@ services:
     build:
       context: ${IMAGE_DIR}/mariadb
     image: mariadb:inception
-    container_name: mariadb
+    container_name: mariadb-inception
     networks:
       - inception-network
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ADMIN_PASSWORD_FILE: /run/secrets/db_admin_password
+      MYSQL_USER_PASSWORD_FILE: /run/secrets/db_user_password
+      MYSQL_WP_PASSWORD_FILE: /run/secrets/db_wp_password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
+      MYSQL_ADMIN: ${MYSQL_ADMIN}
+      MYSQL_WORDPRESS: ${MYSQL_WORDPRESS}
     secrets:
-      - db_root_password
-      - db_password
+      - db_admin_password
+      - db_user_password
+      - db_wp_password
     restart: always
 
   wordpress:
     build:
       context: ${IMAGE_DIR}/wordpress
     image: wordpress:inception
-    container_name: wordpress
+    container_name: wordpress-inception
     depends_on:
       - mariadb
     networks:
@@ -30,21 +35,21 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     environment:
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wp_password
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      MYSQL_WORDPRESS: ${MYSQL_WORDPRESS}
       DOMAIN_NAME: ${DOMAIN_NAME}
     secrets:
-      - db_password
+      - db_wp_password
     restart: always
 
   nginx:
     build:
       context: ${IMAGE_DIR}/nginx
     image: nginx:inception
-    container_name: nginx
+    container_name: nginx-inception
     depends_on:
       - wordpress
     networks:
@@ -76,7 +81,11 @@ volumes:
       device: /home/${USER}/data/wordpress
 
 secrets:
+  db_admin_password:
+    file: ../secrets/db_admin_password.txt
+  db_user_password:
+    file: ../secrets/db_user_password.txt
+  db_wp_password:
+    file: ../secrets/db_wp_password.txt
   db_root_password:
     file: ../secrets/db_root_password.txt
-  db_password:
-    file: ../secrets/db_password.txt

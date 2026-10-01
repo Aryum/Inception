@@ -4,8 +4,11 @@ set -e
 
 DB_DIR="/var/lib/mysql"
 SOCKET="/run/mysqld/mysqld.sock"
+MYSQL_ADMIN_PASSWORD="$(cat "$MYSQL_ADMIN_PASSWORD_FILE")"
+MYSQL_USER_PASSWORD="$(cat "$MYSQL_USER_PASSWORD_FILE")"
+MYSQL_WP_PASSWORD="$(cat "$MYSQL_WP_PASSWORD_FILE")"
 MYSQL_ROOT_PASSWORD="$(cat "$MYSQL_ROOT_PASSWORD_FILE")"
-MYSQL_PASSWORD="$(cat "$MYSQL_PASSWORD_FILE")"
+
 
 
 echo "Initiating MariaDB"
@@ -42,11 +45,14 @@ echo "Setting up SQl"
 mysql --socket=/run/mysqld/mysqld.sock -u root << EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
-CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+CREATE OR REPLACE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';
+GRANT SELECT ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+CREATE OR REPLACE USER '${MYSQL_ADMIN}'@'%' IDENTIFIED BY '${MYSQL_ADMIN_PASSWORD}';
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_ADMIN}'@'%';
+CREATE OR REPLACE USER '${MYSQL_WORDPRESS}'@'%' IDENTIFIED BY '${MYSQL_WP_PASSWORD}';
+GRANT SELECT, INSERT, UPDATE, DELETE ON ${MYSQL_DATABASE}.* TO '${MYSQL_WORDPRESS}'@'%';
 FLUSH PRIVILEGES;
 EOF
-
 #waits for the shutdown of setup server
 #the wait || true serves to wait until the shutdown actually finishes and 
 #|| true is so it disregards the return of the server and the sh doesnt fail through set -e
