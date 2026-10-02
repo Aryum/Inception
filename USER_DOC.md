@@ -24,12 +24,13 @@ Run from the <TODO>(addfolder)
 
 | Action | Command | What it does |
 |--------|---------|--------------------|
-| Build and start | make | Builds and starts services|
+| Build and start | make / make all| Builds and starts containers |
+| Build  | make build | Builds containers |
 | Start | make up | Starts services |
 | Stop | make down| Stops services |
-| Build Clean | make clean | Cleans temporary data |
+| Clean Build | make clean | Cleans temporary data |
 | Full Clean | make fclean | Cleans everything |
-| Remake | make re | Rebuilds and Restarts services|
+| Remake | make re | Rebuilds and Restarts services |
 
 **First launch** It will take longer since wordpress and mariadb need to download and setup some aditional files
 

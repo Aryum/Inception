@@ -26,18 +26,16 @@ down:
 clean: 
 	@echo "${COLOUR_RED} Cleaning images ${COLOR_WHITE}"
 	docker compose -f $(YML_FILE) down
-	docker system prune -af
+	docker compose -f $(YML_FILE) rm -sf
 
 fclean: 
 	@echo "${COLOUR_RED} Cleaning images and volumes ${COLOR_WHITE}"
-	docker compose -f $(YML_FILE) down
-	docker system prune -af
-	docker volume prune -f
+	docker compose -f $(YML_FILE) rm -sfv
 	cd && sudo rm -rf $(DATA_DIR)
 
 re: 
 	@echo "${COLOUR_RED}Rebuilding images and restarting containers${COLOR_WHITE}"
-	docker compose -f $(YML_FILE) down
+	docker compose -f $(YML_FILE) rm -sf
 	docker compose -f $(YML_FILE) build
 	docker compose -f $(YML_FILE) up
 

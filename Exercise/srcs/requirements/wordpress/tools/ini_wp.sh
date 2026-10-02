@@ -22,8 +22,8 @@ echo "Initiating WordPress"
 
 
 #download and configure wordpress if it wasnt done already
-config_exists() { [ ! -f "$WP_PATH/wp-config.php" ]; }
-if config_exists; then
+config_missing() { [ ! -f "$WP_PATH/wp-config.php" ]; }
+if config_missing; then
 	TAR_FILE="/tmp/wordpress.tar.gz"
 	echo "Downloading files"
 	wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
