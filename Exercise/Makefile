@@ -1,4 +1,4 @@
-YML_FILE = /srcs/docker-compose.yml
+YML_FILE = srcs/docker-compose.yml
 DATA_DIR = /home/$(USER)/data
 DIRS = $(DATA_DIR)/wordpress $(DATA_DIR)/mariadb
 
@@ -11,12 +11,12 @@ COLOR_WHITE := \033[0m
 all: build up
 
 build:
-	@echo "${COLOUR_BLUE} Builiding images ${COLOR_WHITE}"
+	@echo "${COLOUR_BLUE}Builiding images ${COLOR_WHITE}"
 	cd && mkdir -p $(DIRS)
 	docker compose -f $(YML_FILE) build
 
 up:
-	@echo "${COLOUR_GREEN} Starting containers ${COLOR_WHITE}"
+	@echo "${COLOUR_GREEN}Starting containers ${COLOR_WHITE}"
 	docker compose -f $(YML_FILE) up -d
 
 down:
@@ -24,7 +24,7 @@ down:
 	docker compose -f $(YML_FILE) down
 
 restart: 
-	@echo "${COLOUR_YELLOW} Restarting containers ${COLOR_WHITE}"
+	@echo "${COLOUR_YELLOW}Restarting containers ${COLOR_WHITE}"
 	docker compose -f $(YML_FILE) down
 	docker compose -f $(YML_FILE) up
 

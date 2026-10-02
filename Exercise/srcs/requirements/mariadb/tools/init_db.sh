@@ -21,12 +21,13 @@ database_missing() { [ ! -d "${DB_DIR}/${MYSQL_DATABASE}" ]; }
 if database_missing; then
 	echo "Creating database directory"
 	mysql_install_db --user=mysql --datadir="${DB_DIR}" > /dev/null
-else
+fi
 
 #stats the server skipping network since its not needed for startup
+#and skipping grand tables makes it so i can login to server without password
 #the mysqld is diferent from mysql the "d" is for the server without the "d" is client
 echo "Starting MariaDB setup server"
-mysqld --skip-networking --socket="${SOCKET}" --user=mysql & pid="$!"
+mysqld --skip-networking --skip-grant-tables --socket="${SOCKET}" --user=mysql & pid="$!"
 
 #waits for 30 secs and tries a new conncetion after 3 secs if one is hanging
 if ! mysqladmin --socket="${SOCKET}" ping --silent --wait=30 --connect-timeout=3; then
@@ -42,7 +43,11 @@ echo "Setting up SQl"
 #since its 1st setup it doesnt have a password yet and we dont need -p
 # '%' is the host wildcard that allows connection from any ip, can be restrained
 # flush privileges reloads the permissions tables to the changes take place immediately
-mysql --socket=/run/mysqld/mysqld.sock -u root << EOF
+# delete serves to remove any users with an empty name that could cause issues
+mysql --socket=${SOCKET} -u root << EOF
+FLUSH PRIVILEGES;
+DELETE FROM mysql.global_priv WHERE User = '';
+DELETE FROM mysql.db WHERE User = '';
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
 CREATE OR REPLACE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';
@@ -50,7 +55,7 @@ GRANT SELECT ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
 CREATE OR REPLACE USER '${MYSQL_ADMIN}'@'%' IDENTIFIED BY '${MYSQL_ADMIN_PASSWORD}';
 GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_ADMIN}'@'%';
 CREATE OR REPLACE USER '${MYSQL_WORDPRESS}'@'%' IDENTIFIED BY '${MYSQL_WP_PASSWORD}';
-GRANT SELECT, INSERT, UPDATE, DELETE ON ${MYSQL_DATABASE}.* TO '${MYSQL_WORDPRESS}'@'%';
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_WORDPRESS}'@'%';
 FLUSH PRIVILEGES;
 EOF
 #waits for the shutdown of setup server
