@@ -23,11 +23,6 @@ down:
 	@echo "${COLOUR_RED} Stoping containers ${COLOR_WHITE}"
 	docker compose -f $(YML_FILE) down
 
-restart: 
-	@echo "${COLOUR_YELLOW}Restarting containers ${COLOR_WHITE}"
-	docker compose -f $(YML_FILE) down
-	docker compose -f $(YML_FILE) up
-
 clean: 
 	@echo "${COLOUR_RED} Cleaning images ${COLOR_WHITE}"
 	docker compose -f $(YML_FILE) down
@@ -40,5 +35,10 @@ fclean:
 	docker volume prune -f
 	cd && sudo rm -rf $(DATA_DIR)
 
-re: fclean all
+re: 
+	@echo "${COLOUR_RED}Rebuilding images and restarting containers${COLOR_WHITE}"
+	docker compose -f $(YML_FILE) down
+	docker compose -f $(YML_FILE) build
+	docker compose -f $(YML_FILE) up
+
 

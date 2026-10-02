@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 #RUN usermod -u 33 www-data && groupmod -g 33 www-data
 RUN mkdir -p /etc/nginx/ssl
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY conf/nginx.conf /etc/nginx/nginx.conf.template
 COPY tools/ini_ssl.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/ini_ssl.sh

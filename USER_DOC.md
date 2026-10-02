@@ -27,7 +27,6 @@ Run from the <TODO>(addfolder)
 | Build and start | make | Builds and starts services|
 | Start | make up | Starts services |
 | Stop | make down| Stops services |
-| Restart | make restart | Restarts services |
 | Build Clean | make clean | Cleans temporary data |
 | Full Clean | make fclean | Cleans everything |
 | Remake | make re | Rebuilds and Restarts services|
@@ -54,14 +53,23 @@ The certificate is self-signed, so the browser will show a warning, since it can
 | Info | Location |
 |------|----------|
 | Non-sensitive | srcs/.env |
-| Passwords | secrets/db_password.txt, secrets/db_root_password.txt|
+| Passwords | secrets/db_admin_password.txt, secrets/db_root_password.txt, secrets/db_user_password.txt, db_wp_password.txt|
 
 **Existing accounts**
  - Wordpress
   - admin <TODO>
   - user <TODO>
- - Mariadb <TODO>
+ - Mariadb
+  - Root
+  - Admin 
+  - User
+  - Wordpress
 
 **Changing a password**
 1. Edit corresponding password file in 'secrets/'
-2. 
+2. Run "Make re" to apply password changes
+note: these files are only present in the VM
+
+## 5.How to check if the services are runniing correcctly
+- docker ps / docker compose ps to check the images that are running
+- docker logs <container> to check logs

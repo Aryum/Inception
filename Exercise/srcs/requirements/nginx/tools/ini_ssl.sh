@@ -11,12 +11,13 @@ KEY="${SSL_DIR}"/nginx.key
 echo "Initiating nginx"
 
 mkdir -p "${SSL_DIR}"
-
 domain_missing() { [ -z "${DOMAIN_NAME}" ]; }
 if domain_missing; then
 	echo "Error: DOMAIN_NAME environment variable not set"
 	exit 1
 fi
+
+sed "s|\${DOMAIN_NAME}|${DOMAIN_NAME}|g" /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 cert_missing() { [ ! -f "${CERT}" ]; }
 cert_expired() { ! openssl x509 -checkend 0 -noout -in "${CERT}" 2 >/dev/null; }
