@@ -20,8 +20,9 @@ fi
 sed "s|\${DOMAIN_NAME}|${DOMAIN_NAME}|g" /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 cert_missing() { [ ! -f "${CERT}" ]; }
-cert_expired() { ! openssl x509 -checkend 0 -noout -in "${CERT}" 2 >/dev/null; }
-if cert_missing || cert_expired; then 
+cert_expired() { ! openssl x509 -checkend 0 -noout -in "${CERT}" 2>/dev/null; }
+cert_domain_mismatch() { ! openssl x509 -noout -checkhost "${DOMAIN_NAME}" -in "${CERT}" 2>/dev/null | grep -q "does match"; }
+if cert_missing || cert_expired || cert_domain_mismatch(); then 
 	echo "Creating SSL certificate for ${DOMAIN_NAME}"
 	
 	#-x509 output self signed X509 certificate instde of signing request

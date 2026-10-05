@@ -13,8 +13,8 @@ MYSQL_ROOT_PASSWORD="$(cat "$MYSQL_ROOT_PASSWORD_FILE")"
 
 echo "Initiating MariaDB"
 
-#Create MySQL data directory
-#	--user specifies that user will be mysql
+#Initializes MySQL data directory
+#	--user makes the user will own those files
 #	--datadir sets the correct location for the db so it is in the correct place
 database_missing() { [ ! -d "${DB_DIR}/${MYSQL_DATABASE}" ]; }
 
@@ -29,7 +29,7 @@ fi
 echo "Starting MariaDB setup server"
 mysqld --skip-networking --skip-grant-tables --socket="${SOCKET}" --user=mysql & pid="$!"
 
-#waits for 30 secs and tries a new conncetion after 3 secs if one is hanging
+#tries up to 30 times trying a new conncetion after 3 secs if one is hanging
 if ! mysqladmin --socket="${SOCKET}" ping --silent --wait=30 --connect-timeout=3; then
 	echo "  MariaDB startup Failed"
 	exit 1
@@ -40,10 +40,11 @@ echo "MariaDB startup was successful"
 echo "Setting up SQl"
 #run setup sql to create database and users
 #connects to database server as root using the socket we created
-#since its 1st setup it doesnt have a password yet and we dont need -p
+# since we used grant tables we dont need password
+# flush priviledges is to reload grant tables, we do one fist so --skip-grant-tables work
+# delete serves to remove any users with an empty name that could cause issues
 # '%' is the host wildcard that allows connection from any ip, can be restrained
 # flush privileges reloads the permissions tables to the changes take place immediately
-# delete serves to remove any users with an empty name that could cause issues
 mysql --socket=${SOCKET} -u root << EOF
 FLUSH PRIVILEGES;
 DELETE FROM mysql.global_priv WHERE User = '';
@@ -58,9 +59,11 @@ CREATE OR REPLACE USER '${MYSQL_WORDPRESS}'@'%' IDENTIFIED BY '${MYSQL_WP_PASSWO
 GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_WORDPRESS}'@'%';
 FLUSH PRIVILEGES;
 EOF
+
 #waits for the shutdown of setup server
 #the wait || true serves to wait until the shutdown actually finishes and 
 #|| true is so it disregards the return of the server and the sh doesnt fail through set -e
+#we do env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" so it doesnt appear on the command line
 echo "Shutting down setup server "
 timeout 30 env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
 wait "$pid" || true

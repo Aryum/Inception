@@ -82,7 +82,7 @@ docker compose -f srcs/docker-compose.yml restart <service>
 docker compose -f srcs/docker-compose.yml down
 ```
 
-### Imahes Volumes and network
+### Images Volumes and network
 ```bash
 docker images
 docker volume ls
@@ -91,12 +91,37 @@ docker network ls
 docker network inspect <network_name>
 ```
 
-### Database check
+### Database management
 ```bash
-docker exec -it mariadb mariadb -u root -p
-SHOW DATABASES; 
-USE <database_name>; 
-SELECT user_login FROM wp_users;
+#enter mariadb in interactive mode
+docker exec -it mariadb mariadb -u <username> -p
+
+#display all databases
+SHOW DATABASES;
+
+#select database
+USE <database_name>;
+
+#display tables from database
+SHOW TABLES;
+
+#display info stored in table
+SELECT * FROM <table> LIMIT 5\G
+
+#create new user
+CREATE USER <name>@<ip> IDENTIFIED BY <password>;
+
+#check users of database
+SELECT User, Host From mysql.user
+
+#show permissions of user ip
+SHOW GRANTS FOR <name>@<ip>
+
+#grant or remove permissions
+GRANT <permission> ON <database>-* FROM <name>@<ip>
+REVOKE <permission> ON <database>-* FROM <name>@<ip>
+#save permissions saves 
+FLUSH PRIVILEDGES
 ```
 
 
@@ -114,7 +139,7 @@ make all
 | wordpress_data | `/var/www/html` | `/home/ricsanto/data/wordpress` | Website files |
 
 ### How the volumes are defined
-These are **Docker named volumes**, work similarly to bind mounts, as they are still stored in a specified path (`/home/ricsanto/data`), but they can still be managed by docker. They are configured like
+These are **Docker named volumes**, work similarly to bind mounts, as they are still stored in a specified path (`/home/ricsanto/data`), but they can still be managed by docker. They are configured like this:
 
 ```yaml
 volumes:
