@@ -6,11 +6,10 @@ WP_PATH="/var/www/html"
 #gets password form secret file
 #checks if file exists and if has something
 #export makes it available for child processes
-passfile_exists() { [ -n "$WORDPRESS_DB_PASSWORD_FILE" ]; }
-passfile_hascontent() { [ -f "$WORDPRESS_DB_PASSWORD_FILE" ]; }
+passfile_set() { [ -n "$WORDPRESS_DB_PASSWORD_FILE" ]; }
+passfile_exists() { [ -s "$WORDPRESS_DB_PASSWORD_FILE" ]; }
 
-
-if passfile_exists && passfile_hascontent; then
+if passfile_set && passfile_exists; then
 	WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
 	export WORDPRESS_DB_PASSWORD
 else
@@ -19,7 +18,6 @@ else
 fi
 
 echo "Initiating WordPress"
-
 
 #download and configure wordpress if it wasnt done already
 config_missing() { [ ! -f "$WP_PATH/wp-config.php" ]; }
