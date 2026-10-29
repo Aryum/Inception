@@ -52,8 +52,7 @@ define('DB_NAME', '${WORDPRESS_DB_NAME}');
 define('DB_USER', '${MYSQL_WORDPRESS}');
 define('DB_PASSWORD', '${WORDPRESS_DB_PASSWORD}');
 define('DB_HOST', '${WORDPRESS_DB_HOST}');
-define('DB_CHARSET', 'utf8');
-define('DB_COLLATE', '');
+define('DB_CHARSET', 'utf8mb4');
 
 
 \$table_prefix = '${WORDPRESS_TABLE_PREFIX:-wp_}';
