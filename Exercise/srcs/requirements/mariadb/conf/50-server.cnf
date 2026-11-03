@@ -1,27 +1,14 @@
-#header that identifies whats being configured
 [mysqld]
 
-#makes it listen to all network interfaces
-#default of ubuntu/debian is 127.0.0.1, meaning only accepts connections from local host
 bind-address = 0.0.0.0
 
-#listening for for the db
-#its already the default one but its good practice
 port = 3306
 
-#path for the unix socket file
-#	socket is an endpoint for communication between processes
-#	the file is just a "known meeting point" used to establish connection when its done they just talk directly
-#	its like the bind adress but for local files
 socket = /var/run/mysqld/mysqld.sock
 
-#mounted volume for presistent data
-#will be used on the docker 
 datadir = /var/lib/mysql
 
-#for writing error logs
 log-error = /var/log/mysql/error.log
 
-#path to file containng process id number of mysqld
 pid-file = /var/run/mysqld/mysqld-pid
 user = mysql
