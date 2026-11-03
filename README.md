@@ -1,6 +1,103 @@
+*This project has been created as part of the 42 curriculum by ricsanto.*
+
 # Inception
+---
+
+## Instructions
+
+### Prerequisites
+- A virtual machine (Linux) with sudo permissions
+- Docker with Docker Compose
+- Make
+
+### 1. Clone the repository
+```bash
+git clone <repository_url> Inception
+cd Inception
+```
+
+### 2. Configure the domain
+The domain is not a real public domain, so map it to the local machine:
+```bash
+echo "127.0.0.1 ricsanto.42.fr" | sudo tee -a /etc/hosts
+```
+
+### 3. Create the secrets and the `.env` file
+Neither is stored in the repository (both are git-ignored), so you must create them.
+
+Secrets, one password per file, in `secrets/`:
+
+| File | Contains |
+|------|----------|
+| `db_root_password.txt` | MariaDB root password |
+| `db_admin_password.txt` | WordPress administrator password |
+| `db_user_password.txt` | WordPress standard user password |
+| `db_wp_password.txt` | Password the WordPress service uses to connect to the database |
+
+Non-sensitive variables in `srcs/.env`:
+```
+IMAGE_DIR=/requirements
+DOMAIN_NAME=ricsanto.42.fr
+MYSQL_DATABASE=<database name>
+MYSQL_USER=<standard user name>
+MYSQL_ADMIN=<admin user name, must not contain "admin">
+WORDPRESS_DB_NAME=<database name>
+WORDPRESS_DB_HOST=mariadb
+WORDPRESS_TABLE_PREFIX=wp_
+```
+
+### 4. Build and run
+```bash
+make
+```
+The first launch takes longer because WordPress is downloaded and MariaDB is initialized. The Makefile also creates the data folders on the host.
+
+### 5. Access the project
+- Website: https://ricsanto.42.fr
+- Administration panel: https://ricsanto.42.fr/wp-admin
+
+The certificate is self-signed, so the browser shows a warning. This is expected for a local project.
+
+### 6. Stop and clean
+| Command | Effect |
+|---------|--------|
+| `make down` | Stops the containers (data is kept) |
+| `make up` | Starts them again |
+| `make clean` | Removes images, keeps volumes |
+| `make fclean` | Removes everything, including the data (**destructive**) |
+| `make re` | Rebuilds and restarts |
+
+For more detail, see [USER_DOC.md](USER_DOC.md) (using the stack) and [DEV_DOC.md](DEV_DOC.md) (development and maintenance).
 
 ---
+
+## Project description
+
+### Use of Docker
+The project sets up a small web infrastructure with Docker Compose: an Nginx container as the only entrypoint (port 443, TLSv1.2/1.3 only), a WordPress + PHP-FPM container, and a MariaDB container. Each service has its own Dockerfile, is built on `debian:bookworm` (the penultimate stable Debian release), and runs in a dedicated container. No ready-made images are pulled.
+
+### Sources included
+```
+├── Makefile                 # builds and manages everything through docker compose
+├── README.md, USER_DOC.md, DEV_DOC.md
+├── secrets/                 # passwords (git-ignored)
+└── srcs/
+    ├── docker-compose.yml   # services, network, volumes, secrets
+    ├── .env                 # non-sensitive variables (git-ignored)
+    └── requirements/
+        ├── mariadb/         # Dockerfile, 50-server.cnf, init_db.sh
+        ├── nginx/           # Dockerfile, nginx.conf, ini_ssl.sh
+        └── wordpress/       # Dockerfile, www.conf, ini_wp.sh
+```
+
+### Main design choices
+- **PID 1 handling:** every Dockerfile uses `ENTRYPOINT` in exec mode, and each startup script ends with `exec <service>`, so the service itself becomes PID 1 and receives signals correctly. Nginx runs with `daemon off;`.
+- **Idempotent startup scripts:** each script checks what already exists (initialized database, `wp-config.php`, valid certificate) so restarting a container never overwrites data.
+- **TLS:** Nginx generates a self-signed certificate at startup if none exists, and only allows TLSv1.2 and TLSv1.3.
+- **Isolation:** only Nginx publishes a port. WordPress (9000) and MariaDB (3306) are reachable only inside the Docker network.
+- **Passwords:** stored as Docker secrets and read from `/run/secrets/`, never in Dockerfiles or in the repository.
+- **Persistence:** the database and website files live in two named volumes stored under `/home/ricsanto/data`.
+- **Resilience:** containers are configured to restart after a crash.
 
 ## Docker Concepts
 
@@ -56,6 +153,24 @@ There are multiple ways to persist data:
 | `none` | Completely isolates the container from the host and from other containers |
 
 ---
+
+
+### Comparisons
+
+**Virtual Machines vs Docker**
+A VM virtualizes hardware through a hypervisor and runs its own kernel, so it is heavy but strongly isolated. A container shares the host kernel and isolates processes with namespaces and cgroups, so it is lighter, faster to start and easier to share, but its isolation is weaker (a kernel vulnerability can reach the host). This project uses a VM as the host environment and Docker for the services inside it, combining both.
+
+**Secrets vs Environment Variables**
+Environment variables are simple, but values written in plain text can leak through `docker inspect`, logs and child processes. Docker secrets are mounted as read-only files in `/run/secrets/` and only given to the containers that need them. This project keeps passwords in secrets and non-sensitive values (domain name, usernames, database name) in `.env`.
+
+**Docker Network vs Host Network**
+With a user-defined bridge network, each container has its own IP and namespace, containers reach each other by service name, and only explicitly published ports are exposed. With the host network, the container shares the host's network stack: there is no isolation and port conflicts are possible. This project uses a bridge network so that only Nginx is exposed, and `network: host` is forbidden by the subject.
+
+**Docker Volumes vs Bind Mounts**
+Bind mounts map a host path directly into the container: easy to access, but less portable and they give the container direct access to the host filesystem. Docker volumes are managed by Docker and are more portable. The subject requires named volumes, but the data must be at `/home/ricsanto/data`, so the project declares named volumes with the `local` driver and `o: bind` options. They remain Docker-managed volumes while their data lands at the required host path.
+
+---
+
 
 ## Project Overview
 
@@ -176,7 +291,7 @@ Sets for folders for log and data folder, files for pid, log socket (file used f
 
 | File | Purpose |
 |------|---------|
-| `nginx.conf` | Nginx configuration. It is used as a **template** (`/etc/nginx/nginx.conf.template`) because it contains the placeholder `${DOMAIN_NAME}` |
+| `nginx.conf` | Nginx configuration. It is used as a **template**  |
 | `ini_ssl.sh` | Entrypoint script: fills in the domain, creates a self-signed SSL certificate if needed, tests the config, and starts nginx |
 
 ---
@@ -345,3 +460,24 @@ This is a PHP-FPM **pool**: a group of worker processes that run PHP code, with 
 - `static`: always runs a fixed number of workers
 - `dynamic`: keeps some ready and creates more if needed (used here)
 - `ondemand`: keeps none up and creates them only when a request arrives
+
+## Resources
+
+### Documentation
+- [Docker documentation](https://docs.docker.com/)
+- [Nginx documentation](https://nginx.org/en/docs/)
+- [MariaDB documentation](https://mariadb.com/docs/)
+
+### Articles and tutorials
+- [Textbook of Linux: PID 1 and init](https://www.textbookoflinux.com/chapter/processes/pid-1-init.html)
+- [Textbook of Linux: Containers](https://www.textbookoflinux.com/chapter/containers.html)
+- [The Linux Process Journey: PID 1 (init)](https://medium.com/@boutnaru/the-linux-process-journey-pid-1-init-60765a069f17)
+- [Docker vs VM: key differences (freeCodeCamp)](https://www.freecodecamp.org/news/docker-vs-vm-key-differences-you-should-know/)
+
+### Videos
+- [NGINX Tutorial for Beginners](https://www.youtube.com/watch?v=9t9Mp0BGnyI)
+- [The Only Docker Tutorial You Need To Get Started ](https://www.youtube.com/watch?v=DQdB7wFEygo)
+- [you need to learn Docker RIGHT NOW!! // Docker Containers 101]( https://www.youtube.com/watch?v=eGz9DS-aIeY)
+
+### Use of AI
+AI was used for undertsanding better some docker concepts, checking config files and improve them, write readmes from notes and proofreading them. 

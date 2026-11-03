@@ -1,14 +1,14 @@
 # User Documentation
 
-A quick guide on how to use and adminster this project's services. No previous knowledge about docker or any of it's services required.
+A quick guide on how to use and administer this project's services. No previous knowledge about docker or any of it's services required.
 
 ## 1.Services provided
 
-This project runs a WordPress website, served securly through HTTPS.
+This project runs a WordPress website, served safely through HTTPS.
 
 | Service | Role | Exposed to outside |
 |---------|------|--------------------|
-| Nginx | Web server, handles HTTPS | Yes port 433 |
+| Nginx | Web server, handles HTTPS | Yes port 443 |
 | Wordpress + php-fpm | Runs website | No |
 | MariaDB | Storing Website data | No |
 
@@ -20,7 +20,7 @@ This project runs a WordPress website, served securly through HTTPS.
 
 ## 2.Starting and stopping the project
 
-Run from the <TODO>(addfolder)
+Run from Home/Desktop/Inception
 
 | Action | Command | What it does |
 |--------|---------|--------------------|
@@ -36,7 +36,7 @@ Run from the <TODO>(addfolder)
 
 ## 3.Accessing the website and administration panel
 
-**Domain setup (one time)** since our website isn't a real public domain, DNS cannot resolvet it. To make it work locally we need to add this line to /etc/hosts:
+**Domain setup (one time)** since our website isn't a real public domain, DNS cannot resolve it. To make it work locally we need to add this line to /etc/hosts:
 ```
 127.0.0.1   ricsanto.42.fr
 ```
@@ -57,13 +57,11 @@ The certificate is self-signed, so the browser will show a warning, since it can
 | Passwords | secrets/db_admin_password.txt, secrets/db_root_password.txt, secrets/db_user_password.txt, db_wp_password.txt|
 
 **Existing accounts**
- - Wordpress
-  - admin <TODO>
-  - user <TODO>
+ - Wordpress database
+  - master
+  - viewer
  - Mariadb
   - Root
-  - Admin 
-  - User
   - Wordpress
 
 **Changing a password**
@@ -71,6 +69,6 @@ The certificate is self-signed, so the browser will show a warning, since it can
 2. Run "Make re" to apply password changes
 note: these files are only present in the VM
 
-## 5.How to check if the services are runniing correcctly
+## 5.How to check if the services are running correctly
 - docker ps / docker compose ps to check the images that are running
 - docker logs <container> to check logs

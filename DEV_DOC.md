@@ -2,11 +2,10 @@
 
 A guide on how to set up, build, run and maintain this project from scratch.
 
-
 ## 1. Setting up the environment from scratch
 ### Prerequisites
  - Virtual Machine
- - Docker wtih Docker compose
+ - Docker with Docker compose
  - Make
  - Sudo permissions
 
@@ -41,7 +40,7 @@ A guide on how to set up, build, run and maintain this project from scratch.
 | IMAGE_DIR | Folder with compose file | /requirements |
 | DOMAIN_NAME | Site domain | login.42.fr |
 | MYSQL_DATABASE | WordPress DB name | name |
-| MYSQL_USER | Standart user of WordPress DB  | name |
+| MYSQL_USER | Standard user of WordPress DB  | name |
 | MYSQL_ADMIN | Admin user of WordPress DB (must not contain "admin") | name |
 | WORDPRESS_DB_NAME | Database name for wordpress | wordpress_db |
 | WORDPRESS_DB_HOST | Database service used for wordpress | mariadb |
@@ -50,12 +49,12 @@ A guide on how to set up, build, run and maintain this project from scratch.
 ### Secrets
 | File | Contains |
 |------|----------|
-|  db_admin_password.txt | wordpress database admin password |
+| db_admin_password.txt | wordpress database admin password |
 | db_root_password.txt | database root password |
 | db_user_password.txt | wordpress database user password |
 | db_wp_password.txt | wordpress database service password |
 
-They are declares on the secrets block in the docker-compose.yml, which will be passed to the containers that need it and accessed by reading /run/secrets/**name**
+They are declared on the secrets block in the docker-compose.yml, which will be passed to the containers that need it and accessed by reading /run/secrets/**name**
 
 
 ## 2. Building and launching the project
