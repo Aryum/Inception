@@ -74,11 +74,12 @@ They are declared on the secrets block in the docker-compose.yml, which will be 
 
 ### Containers
 ```bash
-docker compose -f srcs/docker-compose.yml ps
-docker compose -f srcs/docker-compose.yml logs -f <service>
-docker compose -f srcs/docker-compose.yml exec <service> <command>
-docker compose -f srcs/docker-compose.yml restart <service>
-docker compose -f srcs/docker-compose.yml down
+#use -f srcs/docker-compose.yml if in root folder
+docker compose ps
+docker compose logs -f <service>
+docker compose exec <service> <command>
+docker compose restart <service>
+docker compose down
 ```
 
 ### Images Volumes and network
@@ -123,6 +124,10 @@ REVOKE <permission> ON <database>-* FROM <name>@<ip>
 FLUSH PRIVILEDGES
 ```
 
+### Test http connection
+```bash
+curl -v http://ricsanto.42.fr
+```
 
 ### Full reset (**destructive**)
 ```bash

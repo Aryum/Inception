@@ -1,16 +1,5 @@
 FROM debian:bookworm
 
-#installs PHP-FPM and extensions needed
-#php8.2-mysql -> for database connection
-#php8.2-mbstring -> to be able to handle multibyte chars
-#php8.2-fpm -> allows conncection to nginx
-#php8.2-gd -> image resizing
-#php8.2-zip -> install plugins and themes
-#php8.2-curl -> for core/plugin/theme updates
-#php8.2-xml -> used to process XML data
-#php8.2-intl -> for local aware formating
-#php8.2-soap -> integration of some plugins
-#certificates to be able to download with wget
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	php8.2-mysql \ 
 	php8.2-mbstring \
@@ -37,5 +26,4 @@ RUN chmod +x /usr/local/bin/ini_wp.sh
 
 EXPOSE 9000
 
-#makes it so the sh is always run at container startup
 ENTRYPOINT ["/usr/local/bin/ini_wp.sh"]

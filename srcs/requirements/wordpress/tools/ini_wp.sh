@@ -16,20 +16,18 @@ fi
 
 echo "Initiating WordPress"
 
-config_missing() { [ ! -f "$WP_PATH/wp-config.php" ]; }
-if config_missing; then
-	TAR_FILE="/tmp/wordpress.tar.gz"
-	echo "Downloading files"
-	wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
-	tar -xzf ${TAR_FILE} -C /tmp
-	rm ${TAR_FILE}
+TAR_FILE="/tmp/wordpress.tar.gz"
+echo "Downloading files"
+wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
+tar -xzf ${TAR_FILE} -C /tmp
+rm ${TAR_FILE}
 
-	cp -rn /tmp/wordpress/* "$WP_PATH" || true
-	rm -rf /tmp/wordpress
-	
-	WP_SALTS=$(wget -qO- https://api.wordpress.org/secret-key/1.1/salt/)
+cp -rn /tmp/wordpress/* "$WP_PATH" || true
+rm -rf /tmp/wordpress
 
-	cat > "$WP_PATH/wp-config.php" << EOF
+WP_SALTS=$(wget -qO- https://api.wordpress.org/secret-key/1.1/salt/)
+
+cat > "$WP_PATH/wp-config.php" << EOF
 <?php
 define('WP_HOME', 'https://${DOMAIN_NAME}');
 define('WP_SITEURL', 'https://${DOMAIN_NAME}');
@@ -51,14 +49,11 @@ if ( !defined('ABSPATH') )
 
 require_once ABSPATH . 'wp-settings.php';
 EOF
-	find "$WP_PATH" -type d -exec chmod 750 {} \;
-	find "$WP_PATH" -type f -exec chmod 640 {} \;
-	chown -R www-data:www-data "$WP_PATH"
+find "$WP_PATH" -type d -exec chmod 750 {} \;
+find "$WP_PATH" -type f -exec chmod 640 {} \;
+chown -R www-data:www-data "$WP_PATH"
 
-	echo "WordPress setup sucessful"
-else
-	echo "WordPress already initalized"
-fi
+echo "WordPress setup sucessful"
 
 echo "Starting PHP-FPM"
 exec php-fpm8.2 -F
