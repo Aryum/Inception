@@ -428,9 +428,6 @@ makes the script stop as soon as a command fails.
 `passfile_set()`, `passfile_exists()`
 check that `WORDPRESS_DB_PASSWORD_FILE` is set and that the file exists and is not empty. If not, the script exits with an error.
 
-`config_missing()`
-checks if `wp-config.php` exists. WordPress is only downloaded and configured the first time, so restarting the container doesn't overwrite anything.
-
 `wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}`
 downloads the latest WordPress 
 
@@ -471,6 +468,7 @@ This is a PHP-FPM **pool**: a group of worker processes that run PHP code, with 
 ### Articles and tutorials
 - [Textbook of Linux: PID 1 and init](https://www.textbookoflinux.com/chapter/processes/pid-1-init.html)
 - [Textbook of Linux: Containers](https://www.textbookoflinux.com/chapter/containers.html)
+- [Docker Nginx Wordpress Mariadb tutorial](https://dev.to/alejiri/docker-nginx-wordpress-mariadb-tutorial-inception42-1eok)
 - [The Linux Process Journey: PID 1 (init)](https://medium.com/@boutnaru/the-linux-process-journey-pid-1-init-60765a069f17)
 - [Docker vs VM: key differences (freeCodeCamp)](https://www.freecodecamp.org/news/docker-vs-vm-key-differences-you-should-know/)
 
@@ -480,4 +478,4 @@ This is a PHP-FPM **pool**: a group of worker processes that run PHP code, with 
 - [you need to learn Docker RIGHT NOW!! // Docker Containers 101]( https://www.youtube.com/watch?v=eGz9DS-aIeY)
 
 ### Use of AI
-AI was used for undertsanding better some docker concepts, checking config files and improve them, write readmes from notes and proofreading them. 
+AI was used to undertsand better some docker concepts, checking config and .sh files and improve them, write readmes from notes and proofreading them.
