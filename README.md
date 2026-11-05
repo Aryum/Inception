@@ -36,14 +36,14 @@ Secrets, one password per file, in `secrets/`:
 
 Non-sensitive variables in `srcs/.env`:
 ```
-IMAGE_DIR=/requirements
 DOMAIN_NAME=ricsanto.42.fr
 MYSQL_DATABASE=<database name>
 MYSQL_USER=<standard user name>
 MYSQL_ADMIN=<admin user name, must not contain "admin">
 WORDPRESS_DB_NAME=<database name>
-WORDPRESS_DB_HOST=mariadb
+WORDPRESS_DB_HOST=mariadb:3306
 WORDPRESS_TABLE_PREFIX=wp_
+
 ```
 
 ### 4. Build and run
