@@ -30,8 +30,8 @@ Secrets, one password per file, in `secrets/`:
 | File | Contains |
 |------|----------|
 | `db_root_password.txt` | MariaDB root password |
-| `db_admin_password.txt` | WordPress administrator password |
-| `db_user_password.txt` | WordPress standard user password |
+| `db_admin_password.txt` | WordPress database administrator password |
+| `db_user_password.txt` | WordPress database standard user password |
 | `db_wp_password.txt` | Password the WordPress service uses to connect to the database |
 
 Non-sensitive variables in `srcs/.env`:

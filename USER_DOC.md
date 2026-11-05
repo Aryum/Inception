@@ -57,12 +57,16 @@ The certificate is self-signed, so the browser will show a warning, since it can
 | Passwords | secrets/db_admin_password.txt, secrets/db_root_password.txt, secrets/db_user_password.txt, db_wp_password.txt|
 
 **Existing accounts**
- - Wordpress database
-  - master
-  - viewer
  - Mariadb
   - Root
   - Wordpress
+ - Wordpress database
+  - master
+  - viewer
+ - Wordpress website
+  - ricsanto
+  - santoric
+
 
 **Changing a password**
 1. Edit corresponding password file in 'secrets/'
