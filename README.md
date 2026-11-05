@@ -37,10 +37,11 @@ Secrets, one password per file, in `secrets/`:
 Non-sensitive variables in `srcs/.env`:
 ```
 DOMAIN_NAME=ricsanto.42.fr
-MYSQL_DATABASE=<database name>
-MYSQL_USER=<standard user name>
-MYSQL_ADMIN=<admin user name, must not contain "admin">
-WORDPRESS_DB_NAME=<database name>
+MYSQL_DATABASE=wordpress_db
+MYSQL_USER=viewer
+MYSQL_ADMIN=master
+MYSQL_WORDPRESS=wp_user
+WORDPRESS_DB_NAME=wordpress_db
 WORDPRESS_DB_HOST=mariadb:3306
 WORDPRESS_TABLE_PREFIX=wp_
 
