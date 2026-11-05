@@ -22,8 +22,7 @@ services:
       - db_user_password
       - db_wp_password
       - db_root_password
-    restart: always
-    pull_policy: build
+    
 
   wordpress:
     build:
@@ -45,8 +44,7 @@ services:
       DOMAIN_NAME: ${DOMAIN_NAME}
     secrets:
       - db_wp_password
-    restart: always
-    pull_policy: build
+    
 
   nginx:
     build:
@@ -63,8 +61,7 @@ services:
       - "443:443"
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
-    restart: always
-    pull_policy: build
+    
 
 networks:
   inception-network:
