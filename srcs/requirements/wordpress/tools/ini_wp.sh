@@ -2,6 +2,7 @@
 set -e
 
 WP_PATH="/var/www/html"
+WORDPRESS_DB_PASSWORD_FILE="/run/secrets/db_wp_password"
 
 passfile_set() { [ -n "$WORDPRESS_DB_PASSWORD_FILE" ]; }
 passfile_exists() { [ -s "$WORDPRESS_DB_PASSWORD_FILE" ]; }
@@ -38,7 +39,7 @@ define('DB_HOST', '${WORDPRESS_DB_HOST}');
 define('DB_CHARSET', 'utf8mb4');
 
 
-\$table_prefix = '${WORDPRESS_TABLE_PREFIX:-wp_}';
+\$table_prefix = 'wp_';
 
 ${WP_SALTS}
 
@@ -57,3 +58,4 @@ echo "WordPress setup sucessful"
 
 echo "Starting PHP-FPM"
 exec php-fpm8.2 -F
+#find a way to change php config nicely

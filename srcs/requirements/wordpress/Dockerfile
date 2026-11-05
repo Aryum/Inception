@@ -18,11 +18,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /var/www/html
 
-COPY conf/www.conf /etc/php/8.2/fpm/pool.d/
+COPY conf/www.conf /etc/php/8.2/fpm/pool.d/conf/www.conf.template
 
 COPY tools/ini_wp.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/ini_wp.sh
+
+RUN envsubst '${WP_PORT}' \
+	< /etc/php/8.2/fpm/pool.d/conf/www.conf.template \
+	> /etc/php/8.2/fpm/pool.d/conf/www.conf
 
 EXPOSE 9000
 
