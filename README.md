@@ -12,7 +12,7 @@
 
 ### 1. Clone the repository
 ```bash
-git clone <repository_url> Inception
+git clone https://github.com/Aryum/Inception.git Inception
 cd Inception
 ```
 
