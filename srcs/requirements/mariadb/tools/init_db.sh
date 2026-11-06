@@ -3,12 +3,17 @@ set -e
 
 DB_DIR="/var/lib/mysql"
 SOCKET="/run/mysqld/mysqld.sock"
-MYSQL_WP_PASSWORD="$(cat /run/secrets/db_wp_pass)"
-MYSQL_ROOT_PASSWORD="$(cat /run/secrets/db_root_pass)"
+WORDPRESS_DB_PASSWORD="$(cat /run/secrets/db_wp_pass)"
+ROOT_DB_PASSWORD="$(cat /run/secrets/db_root_pass)"
 
 echo "Initiating MariaDB"
 
-database_missing() { [ ! -d "${DB_DIR}/${MYSQL_DATABASE}" ]; }
+envsubst '${MYSQL_PORT}' \
+	< /etc/template/50-server.cnf.template \
+	> /etc/mysql/mariadb.conf.d/50-server.cnf
+
+
+database_missing() { [ ! -d "${DB_DIR}/mysql" ]; }
 
 if database_missing; then
 	echo "Creating database directory"
@@ -28,20 +33,15 @@ echo "MariaDB startup was successful"
 echo "Setting up SQl"
 mysql --socket=${SOCKET} -u root << EOF
 FLUSH PRIVILEGES;
-DELETE FROM mysql.global_priv WHERE User = '';
-DELETE FROM mysql.db WHERE User = '';
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
-GRANT SELECT ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
-CREATE OR REPLACE USER '${MYSQL_ADMIN}'@'%' IDENTIFIED BY '${MYSQL_ADMIN_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_ADMIN}'@'%';
-CREATE OR REPLACE USER '${MYSQL_WORDPRESS}'@'%' IDENTIFIED BY '${MYSQL_WP_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_WORDPRESS}'@'%';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${ROOT_DB_PASSWORD}';
+CREATE DATABASE IF NOT EXISTS ${WORDPRESS_DB_NAME};
+CREATE OR REPLACE USER '${WORDPRESS_DB_USER}'@'%' IDENTIFIED BY '${WORDPRESS_DB_PASSWORD}';
+GRANT ALL PRIVILEGES ON ${WORDPRESS_DB_NAME}.* TO '${WORDPRESS_DB_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
 
 echo "Shutting down setup server "
-timeout 30 env MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
+timeout 30 env MYSQL_PWD="${ROOT_DB_PASSWORD}" mysqladmin --socket="${SOCKET}" -u root shutdown
 wait "$pid" || true
 
 echo "Starting database"

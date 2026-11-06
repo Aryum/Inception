@@ -7,6 +7,10 @@ KEY="${SSL_DIR}"/nginx.key
 
 echo "Initiating nginx"
 
+envsubst '${NGINX_PORT} ${WP_PORT} ${DOMAIN_NAME}' \
+	< /etc/template/nginx.conf.template \
+	> /etc/nginx/nginx.conf
+
 mkdir -p "${SSL_DIR}"
 domain_missing() { [ -z "${DOMAIN_NAME}" ]; }
 if domain_missing; then

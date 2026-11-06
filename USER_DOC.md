@@ -34,14 +34,6 @@ Run from Home/Desktop/Inception
 
 **First launch** It will take longer since wordpress and mariadb need to download and setup some aditional files
 
-## 3.Accessing the website and administration panel
-
-**Domain setup (one time)** since our website isn't a real public domain, DNS cannot resolve it. To make it work locally we need to add this line to /etc/hosts:
-```
-127.0.0.1   ricsanto.42.fr
-```
-127.0.0.1 is the loopback adress meaning the same machine
-
 ### URL
  - Website: https://ricsanto.42.fr
  - Admin page: https://ricsanto.42.fr/wp-admin
@@ -49,7 +41,7 @@ Run from Home/Desktop/Inception
 The certificate is self-signed, so the browser will show a warning, since it cannot verify the certificate with a trusted authority. This warning can be safely ignored since its a local project.
 
 
-## 4.Locating and managing credentials
+## 3.Locating and managing credentials
 
 | Info | Location |
 |------|----------|
@@ -60,9 +52,6 @@ The certificate is self-signed, so the browser will show a warning, since it can
  - Mariadb
   - Root
   - Wordpress
- - Wordpress database
-  - master
-  - viewer
  - Wordpress website
   - ricsanto
   - santoric

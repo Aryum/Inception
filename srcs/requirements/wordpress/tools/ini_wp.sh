@@ -2,46 +2,51 @@
 set -e
 
 WP_PATH="/var/www/html"
-WORDPRESS_DB_PASSWORD_FILE="/run/secrets/db_wp_password"
+SALT_FILE="$WP_PATH/SaltFile"
+DB_PASSWORD_FILE="/run/secrets/db_wp_pass"
+TAR_FILE="$WP_PATH/wordpress.tar.gz"
 
-passfile_set() { [ -n "$WORDPRESS_DB_PASSWORD_FILE" ]; }
-passfile_exists() { [ -s "$WORDPRESS_DB_PASSWORD_FILE" ]; }
+echo "Initiating WordPress"
+
+envsubst '${WP_PORT}' \
+	< /etc/template/www.conf.template \
+	> /etc/php/8.2/fpm/pool.d/www.conf
+
+
+passfile_set() { [ -n "$DB_PASSWORD_FILE" ]; }
+passfile_exists() { [ -s "$DB_PASSWORD_FILE" ]; }
 
 if passfile_set && passfile_exists; then
-	WORDPRESS_DB_PASSWORD=$(cat "$WORDPRESS_DB_PASSWORD_FILE")
+	WORDPRESS_DB_PASSWORD=$(cat "$DB_PASSWORD_FILE")
 	export WORDPRESS_DB_PASSWORD
 else
 	echo "Password file not found or it's empty"
 	exit 1
 fi
 
-echo "Initiating WordPress"
+config_missing() { [ ! -s "$TAR_FILE" ]; }
+if config_missing; then
+	echo "Downloading files"
+	wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
+	tar -xzf ${TAR_FILE} -C "$WP_PATH" --strip-components=1
+	wget -qO- https://api.wordpress.org/secret-key/1.1/salt/ > "$SALT_FILE"
+fi
 
-TAR_FILE="/tmp/wordpress.tar.gz"
-echo "Downloading files"
-wget -q https://wordpress.org/latest.tar.gz -O ${TAR_FILE}
-tar -xzf ${TAR_FILE} -C /tmp
-rm ${TAR_FILE}
-
-cp -rn /tmp/wordpress/* "$WP_PATH" || true
-rm -rf /tmp/wordpress
-
-WP_SALTS=$(wget -qO- https://api.wordpress.org/secret-key/1.1/salt/)
 
 cat > "$WP_PATH/wp-config.php" << EOF
 <?php
 define('WP_HOME', 'https://${DOMAIN_NAME}');
 define('WP_SITEURL', 'https://${DOMAIN_NAME}');
 define('DB_NAME', '${WORDPRESS_DB_NAME}');
-define('DB_USER', '${MYSQL_WORDPRESS}');
+define('DB_USER', '${WORDPRESS_DB_USER}');
 define('DB_PASSWORD', '${WORDPRESS_DB_PASSWORD}');
-define('DB_HOST', '${WORDPRESS_DB_HOST}');
+define('DB_HOST', 'mariadb');
 define('DB_CHARSET', 'utf8mb4');
 
 
 \$table_prefix = 'wp_';
 
-${WP_SALTS}
+$(cat "$SALT_FILE")
 
 define('WP_DEBUG', false);
 
@@ -58,4 +63,3 @@ echo "WordPress setup sucessful"
 
 echo "Starting PHP-FPM"
 exec php-fpm8.2 -F
-#find a way to change php config nicely
