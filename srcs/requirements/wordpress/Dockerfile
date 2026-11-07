@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	php8.2-zip \
 	ca-certificates \
 	gettext-base \
+	mariadb-client \
 	wget \
 	curl \
 	&& ln -s /usr/sbin/php-fpm8.2 /usr/local/bin/php-fpm \
@@ -22,6 +23,9 @@ WORKDIR /var/www/html
 COPY conf/www.conf /etc/template/www.conf.template
 
 COPY tools/ini_wp.sh /usr/local/bin/
+
+RUN curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x /usr/local/bin/wp
 
 RUN chmod +x /usr/local/bin/ini_wp.sh
 

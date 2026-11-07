@@ -46,22 +46,17 @@ The certificate is self-signed, so the browser will show a warning, since it can
 | Info | Location |
 |------|----------|
 | Non-sensitive | srcs/.env |
-| Passwords | secrets/db_admin_password.txt, secrets/db_root_password.txt, secrets/db_user_password.txt, db_wp_password.txt|
+UPDATE
 
 **Existing accounts**
  - Mariadb
   - Root
   - Wordpress
  - Wordpress website
-  - ricsanto
-  - santoric
+  - ricsanto (can be changed in env)
+  - santoric (can be changed in env)
 
 
-**Changing a password**
-1. Edit corresponding password file in 'secrets/'
-2. Run "Make re" to apply password changes
-note: these files are only present in the VM
-
-## 5.How to check if the services are running correctly
+## 4.How to check if the services are running correctly
 - docker ps / docker compose ps to check the images that are running
-- docker logs <container> to check logs
+- make logs to check logs

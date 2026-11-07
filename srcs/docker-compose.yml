@@ -13,7 +13,7 @@ services:
     secrets:
       - db_root_pass
       - db_wp_pass
-    
+    restart: unless-stopped
 
   wordpress:
     build:
@@ -30,6 +30,9 @@ services:
       - .env
     secrets:
       - db_wp_pass
+      - wp_admin_pass
+      - wp_basic_pass
+    restart: unless-stopped
     
 
   nginx:
@@ -47,6 +50,7 @@ services:
       - "443:443"
     env_file:
       - .env
+    restart: unless-stopped
     
 
 networks:
@@ -74,6 +78,6 @@ secrets:
     file: ../secrets/db_wp_pass.txt
   wp_admin_pass:
     file: ../secrets/wp_admin_pass.txt
-  wp_user_pass:
-    file: ../secrets/wp_user_pass.txt
+  wp_basic_pass:
+    file: ../secrets/wp_basic_pass.txt
 

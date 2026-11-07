@@ -5,7 +5,7 @@ DIRS := $(DATA_DIR)/wordpress $(DATA_DIR)/mariadb
 HOST := "127.0.0.1 $(DOMAIN_NAME)"
 PASS_FILES :=	secrets/db_root_pass.txt	\
 				secrets/db_wp_pass.txt		\
-				secrets/wp_user_pass.txt	\
+				secrets/wp_basic_pass.txt	\
 				secrets/wp_admin_pass.txt
 
 
@@ -36,8 +36,8 @@ down:
 	@echo "${COLOUR_RED} Stoping containers ${COLOR_WHITE}"
 	docker compose -f $(YML_FILE) down
 
-log:
-	docker compose -f $(YML_FILE) logs
+logs:
+	docker compose -f $(YML_FILE) logs -f
 
 clean: 
 	@echo "${COLOUR_RED} Cleaning images ${COLOR_WHITE}"

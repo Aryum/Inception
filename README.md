@@ -276,13 +276,7 @@ The volume is still managed by Docker, but the data is stored at the path we set
 
 | Variable | Meaning |
 |----------|---------|
-| `DOMAIN_NAME` | Website domain name (subject requires to be <login>.42.fr) |
-| `WP_USER` | Wordpress user login name |
-| `WP_ADMIN` | Wordpress admin login name |
-| `WP_PORT` | Wordpress listening port |
-| `MYSQL_PORT` | Mariadb listening port |
-| `WORDPRESS_DB_USER` | Wordpress username to acess the database |
-| `WORDPRESS_DB_NAME` | Wordpress database name |
+UPDATE
 ---
 
 ### `www.conf` explained
