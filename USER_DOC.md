@@ -34,7 +34,7 @@ Run from Home/Desktop/Inception
 
 **First launch** It will take longer since wordpress and mariadb need to download and setup some aditional files
 
-### URL
+### URL 
  - Website: https://ricsanto.42.fr
  - Admin page: https://ricsanto.42.fr/wp-admin
 
@@ -46,7 +46,7 @@ The certificate is self-signed, so the browser will show a warning, since it can
 | Info | Location |
 |------|----------|
 | Non-sensitive | srcs/.env |
-UPDATE
+| Passwords | secrets |
 
 **Existing accounts**
  - Mariadb
@@ -55,7 +55,6 @@ UPDATE
  - Wordpress website
   - ricsanto (can be changed in env)
   - santoric (can be changed in env)
-
 
 ## 4.How to check if the services are running correctly
 - docker ps / docker compose ps to check the images that are running

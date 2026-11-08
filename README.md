@@ -12,54 +12,22 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Aryum/Inception.git Inception
+git clone <repository_link> Inception
 cd Inception
 ```
-
-### 2. Configure the domain
-The domain is not a real public domain, so map it to the local machine:
-```bash
-echo "127.0.0.1 ricsanto.42.fr" | sudo tee -a /etc/hosts
-```
-
-### 3. Create the secrets and the `.env` file
-Neither is stored in the repository (both are git-ignored), so you must create them.
-
-Secrets, one password per file, in `secrets/`:
-
-| File | Contains |
-|------|----------|
-| `db_root_password.txt` | MariaDB root password |
-| `db_admin_password.txt` | WordPress database administrator password |
-| `db_user_password.txt` | WordPress database standard user password |
-| `db_wp_password.txt` | Password the WordPress service uses to connect to the database |
-
-Non-sensitive variables in `srcs/.env`:
-```
-DOMAIN_NAME=ricsanto.42.fr
-MYSQL_DATABASE=wordpress_db
-MYSQL_USER=viewer
-MYSQL_ADMIN=master
-MYSQL_WORDPRESS=wp_user
-WORDPRESS_DB_NAME=wordpress_db
-WORDPRESS_DB_HOST=mariadb:3306
-WORDPRESS_TABLE_PREFIX=wp_
-
-```
-
-### 4. Build and run
+### 2. Build and run
 ```bash
 make
 ```
-The first launch takes longer because WordPress is downloaded and MariaDB is initialized. The Makefile also creates the data folders on the host.
+The first launch takes longer because WordPress is downloaded and MariaDB is initialized. The Makefile also creates the data folders on the host and generate passwords.
 
-### 5. Access the project
+### 3. Access the project
 - Website: https://ricsanto.42.fr
 - Administration panel: https://ricsanto.42.fr/wp-admin
 
 The certificate is self-signed, so the browser shows a warning. This is expected for a local project.
 
-### 6. Stop and clean
+### 4. Stop and clean
 | Command | Effect |
 |---------|--------|
 | `make down` | Stops the containers (data is kept) |
@@ -67,6 +35,8 @@ The certificate is self-signed, so the browser shows a warning. This is expected
 | `make clean` | Removes images, keeps volumes |
 | `make fclean` | Removes everything, including the data (**destructive**) |
 | `make re` | Rebuilds and restarts |
+| `make logs` | Check docker compose logs |
+
 
 For more detail, see [USER_DOC.md](USER_DOC.md) (using the stack) and [DEV_DOC.md](DEV_DOC.md) (development and maintenance).
 
@@ -84,7 +54,7 @@ The project sets up a small web infrastructure with Docker Compose: an Nginx con
 ├── secrets/                 # passwords (git-ignored)
 └── srcs/
     ├── docker-compose.yml   # services, network, volumes, secrets
-    ├── .env                 # non-sensitive variables (git-ignored)
+    ├── .env                 # non-sensitive variables 
     └── requirements/
         ├── mariadb/         # Dockerfile, 50-server.cnf, init_db.sh
         ├── nginx/           # Dockerfile, nginx.conf, ini_ssl.sh
@@ -93,7 +63,6 @@ The project sets up a small web infrastructure with Docker Compose: an Nginx con
 
 ### Main design choices
 - **PID 1 handling:** every Dockerfile uses `ENTRYPOINT` in exec mode, and each startup script ends with `exec <service>`, so the service itself becomes PID 1 and receives signals correctly. Nginx runs with `daemon off;`.
-- **Idempotent startup scripts:** each script checks what already exists (initialized database, `wp-config.php`, valid certificate) so restarting a container never overwrites data.
 - **TLS:** Nginx generates a self-signed certificate at startup if none exists, and only allows TLSv1.2 and TLSv1.3.
 - **Isolation:** only Nginx publishes a port. WordPress (9000) and MariaDB (3306) are reachable only inside the Docker network.
 - **Passwords:** stored as Docker secrets and read from `/run/secrets/`, never in Dockerfiles or in the repository.
@@ -215,13 +184,6 @@ We use exec mode, and our startup scripts end with `exec <service>`, which repla
 ### Docker Compose
 For easier configuration of these services we use a Docker Compose file (`.yml`), as explained earlier. It streamlines our container initialization, and lets us set up the network, volumes, environment variables and more.
 
-#### Secrets
-Our containers may have sensitive data like API keys and passwords. If they were written in plain text in the environment, they could be exposed through `docker inspect`, logs and child processes.
-
-To avoid this, Docker has **secrets**, which pass files in read-only mode, mounted at `/run/secrets/<secret name>`. They are only granted to the containers that need them in the compose file, and are read by the service's startup script or by the service itself.
-
-Other non-sensitive data, like the domain name and usernames, can safely stay in `.env`.
-
 #### Volumes
 Using bind mounts directly in the services is not allowed, but we still want to store data at a specific path on the host. The workaround is to declare a **named volume** with the `local` driver and set `o: bind`, so Docker uses an existing host directory as the volume's storage:
 
@@ -276,7 +238,15 @@ The volume is still managed by Docker, but the data is stored at the path we set
 
 | Variable | Meaning |
 |----------|---------|
-UPDATE
+| DOMAIN_NAME | Website address|
+| WP_BASIC_USER | Wordpress user |
+| WP_ADMIN_USER | Wordpress admin |
+| WP_PORT | Wordpress listening port |
+| MYSQL_PORT | MariaDB listening port |
+| NGINX_PORT | Nginx listening port |
+| WP_TITLE | Website tittle |
+| WORDPRESS_DB_USER | Wordpress database user |
+| WORDPRESS_DB_NAME | Wordpress database name |
 ---
 
 ### `www.conf` explained
@@ -286,7 +256,7 @@ This is a PHP-FPM **pool**: a group of worker processes that run PHP code, with 
 |-----------|-------------|
 | `[www]` | Name of the pool. It can be anything |
 | `user` / `group` | User and group the workers run as. They must match the owner of the WordPress files (`www-data`) |
-| `listen = 9000` | Listens on TCP port 9000. This is the port nginx uses in `fastcgi_pass wordpress:9000;` |
+| `listen = ${WP_PORT}` | Listens on TCP port 9000. This is the port nginx uses in `fastcgi_pass wordpress:${WP_PORT};` |
 | `listen.owner` / `listen.group` | Owner of the socket file. Only matters when using a unix socket, not with a TCP port |
 
 #### Process management

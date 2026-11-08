@@ -34,7 +34,7 @@ define('WP_SITEURL', 'https://${DOMAIN_NAME}');
 define('DB_NAME', '${WORDPRESS_DB_NAME}');
 define('DB_USER', '${WORDPRESS_DB_USER}');
 define('DB_PASSWORD', '${WP_DB_PASSWORD}');
-define('DB_HOST', 'mariadb');
+define('DB_HOST', 'mariadb:${MYSQL_PORT}');
 define('DB_CHARSET', 'utf8mb4');
 
 
@@ -55,7 +55,7 @@ chown -R www-data:www-data "$WP_PATH"
 
 
 echo "Waiting for MariaDB..."
-connect_db() { mariadb-admin ping -h mariadb \
+connect_db() { mariadb-admin ping -P ${MYSQL_PORT} -h mariadb \
 				-u"$WORDPRESS_DB_USER" -p"$WP_DB_PASSWORD" \
 				--wait=30 --connect-timeout=3 --silent; }
 

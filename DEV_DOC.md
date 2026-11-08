@@ -31,11 +31,24 @@ A guide on how to set up, build, run and maintain this project from scratch.
 ### Env
 | Variable | Purpose | Example |
 |----------|---------|---------|
-UPDATE
+| DOMAIN_NAME | Website address| ricsanto.42.fr |
+| WP_BASIC_USER | Wordpress user |santoric |
+| WP_ADMIN_USER | Wordpress admin |ricsanto |
+| WP_PORT | Wordpress listening port | 9000 |
+| MYSQL_PORT | MariaDB listening port | 3306 |
+| NGINX_PORT | Nginx listening port | 443 |
+| WP_TITLE | Website tittle | Inception |
+| WORDPRESS_DB_USER | Wordpress database user | wp_user |
+| WORDPRESS_DB_NAME | Wordpress database name | wordpress_db |
+
+
 ### Secrets
 | File | Contains |
 |------|----------|
-UPDATE
+| db_root_pass | database root password |
+| db_wp_pass | database wordpress password |
+| wp_admin_pass | wordpress admin passsword |
+| wp_basic_pass | wordpress user password |
 
 They are declared on the secrets block in the docker-compose.yml, which will be passed to the containers that need it and accessed by reading /run/secrets/**name**
 
@@ -57,7 +70,6 @@ They are declared on the secrets block in the docker-compose.yml, which will be 
 
 ### Containers
 ```bash
-#use -f srcs/docker-compose.yml if in root folder
 docker compose ps
 docker compose logs -f <service>
 docker compose exec <service> <command>
@@ -72,6 +84,7 @@ docker volume ls
 docker volume inspect <volume_name>
 docker network ls
 docker network inspect <network_name>
+docker port <container_name>
 ```
 
 ### Database management
@@ -110,6 +123,7 @@ FLUSH PRIVILEDGES
 ### Test http connection
 ```bash
 curl -v http://ricsanto.42.fr
+#add port to end if its diferent than default value 443
 ```
 
 ### Full reset (**destructive**)

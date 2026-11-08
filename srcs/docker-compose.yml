@@ -2,6 +2,8 @@ services:
   mariadb:
     build:
       context: requirements/mariadb
+      args:
+        MYSQL_PORT: ${MYSQL_PORT}
     image: mariadb:v1
     container_name: mariadb
     networks:
@@ -18,6 +20,8 @@ services:
   wordpress:
     build:
       context: requirements/wordpress
+      args:
+        WP_PORT: ${WP_PORT}
     image: wordpress:v1
     container_name: wordpress
     depends_on:
@@ -32,12 +36,15 @@ services:
       - db_wp_pass
       - wp_admin_pass
       - wp_basic_pass
+   
     restart: unless-stopped
     
 
   nginx:
     build:
       context: requirements/nginx
+      args:
+        NGINX_PORT: ${NGINX_PORT}
     image: nginx:v1
     container_name: nginx
     depends_on:
@@ -47,7 +54,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     ports:
-      - "443:443"
+      - "${NGINX_PORT}:${NGINX_PORT}"
     env_file:
       - .env
     restart: unless-stopped

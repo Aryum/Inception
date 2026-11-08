@@ -13,6 +13,8 @@ COPY tools/ini_ssl.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/ini_ssl.sh
 
-EXPOSE 443
+ARG NGINX_PORT=443
+
+EXPOSE ${NGINX_PORT}
 
 ENTRYPOINT [ "/usr/local/bin/ini_ssl.sh" ]

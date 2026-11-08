@@ -29,6 +29,8 @@ RUN curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/bui
 
 RUN chmod +x /usr/local/bin/ini_wp.sh
 
-EXPOSE 9000
+ARG WP_PORT=9000
+
+EXPOSE ${WP_PORT}
 
 ENTRYPOINT ["/usr/local/bin/ini_wp.sh"]
