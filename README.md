@@ -220,7 +220,7 @@ The volume is still managed by Docker, but the data is stored at the path we set
 
 | File | Purpose |
 |------|---------|
-| `nginx.conf` | Nginx configuration. It is used as a **template**  |
+| `nginx.conf` | Nginx configuration. |
 | `ini_ssl.sh` | Entrypoint script: fills in the domain, creates a self-signed SSL certificate if needed, tests the config, and starts nginx |
 
 ---
