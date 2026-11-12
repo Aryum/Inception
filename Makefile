@@ -8,6 +8,8 @@ PASS_FILES :=	secrets/db_root_pass.txt	\
 				secrets/wp_basic_pass.txt	\
 				secrets/wp_admin_pass.txt
 
+USER_FILES :=	secrets/wp_admin_user.txt	\
+				secrets/wp_basic_user.txt	
 
 
 COLOUR_GREEN := \033[1;32m
@@ -18,15 +20,27 @@ COLOR_WHITE := \033[0m
 
 all: build up
 
-build: $(PASS_FILES)
+build: users check-users $(PASS_FILES) 
 	@echo "${COLOUR_BLUE}Builiding images ${COLOR_WHITE}"
 	grep -qs $(HOST) /etc/hosts || (echo $(HOST) | sudo tee -a /etc/hosts)
 	cd && mkdir -p $(DIRS)
 	docker compose -f $(YML_FILE) build
 
-secrets/%.txt:
+users: 
+	touch $(USER_FILES)
+
+check-users:
+	@for f in $(USER_FILES); do \
+		test -s "$$f" || { echo "Error: $$f is empty"; exit 1; }; \
+	done
+	@dups=$$(sort $(USER_FILES) | uniq -d); \
+	if [ -n "$$dups" ]; then \
+		echo "Error: duplicate values: $$dups"; exit 1; \
+	fi
+
+secrets/%pass.txt:
 	mkdir -p secrets
-	openssl rand -out  $@ -base64 5
+	openssl rand -out $@ -base64 5
 
 up:
 	@echo "${COLOUR_GREEN}Starting containers ${COLOR_WHITE}"
@@ -55,6 +69,6 @@ re:
 	docker compose -f $(YML_FILE) build
 	docker compose -f $(YML_FILE) up -d
 
-.PHONY: test all build up down clean fclean re FORCE
+.PHONY: test all build up down clean fclean re FORCE users check-users
 
 

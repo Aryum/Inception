@@ -6,13 +6,12 @@ SALT_FILE="$WP_PATH/SaltFile"
 WP_DB_PASSWORD=$(cat "/run/secrets/db_wp_pass")
 WP_ADMIN_PASSWORD=$(cat "/run/secrets/wp_admin_pass")
 WP_BASIC_PASSWORD=$(cat "/run/secrets/wp_basic_pass")
+WP_ADMIN_USER=$(cat "/run/secrets/wp_admin_user")
+WP_BASIC_USER=$(cat "/run/secrets/wp_basic_user")
 
 TAR_FILE="$WP_PATH/wordpress.tar.gz"
 
-
-
 echo "Initiating WordPress"
-
 envsubst '${WP_PORT}' \
 	< /etc/template/www.conf.template \
 	> /etc/php/8.2/fpm/pool.d/www.conf

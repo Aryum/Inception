@@ -32,8 +32,6 @@ A guide on how to set up, build, run and maintain this project from scratch.
 | Variable | Purpose | Example |
 |----------|---------|---------|
 | DOMAIN_NAME | Website address| ricsanto.42.fr |
-| WP_BASIC_USER | Wordpress user |santoric |
-| WP_ADMIN_USER | Wordpress admin |ricsanto |
 | WP_PORT | Wordpress listening port | 9000 |
 | MYSQL_PORT | MariaDB listening port | 3306 |
 | NGINX_PORT | Nginx listening port | 443 |
@@ -49,6 +47,11 @@ A guide on how to set up, build, run and maintain this project from scratch.
 | db_wp_pass | database wordpress password |
 | wp_admin_pass | wordpress admin passsword |
 | wp_basic_pass | wordpress user password |
+| wp_admin_user | wordpress admin username |
+| wp_basic_user | wordpress user username |
+
+
+Passwords are automatically generated, username files need to be configed.
 
 They are declared on the secrets block in the docker-compose.yml, which will be passed to the containers that need it and accessed by reading /run/secrets/**name**
 
@@ -65,6 +68,9 @@ They are declared on the secrets block in the docker-compose.yml, which will be 
 | make clean  | Cleans images leaving volumes |
 | make fclean  | Cleans everything including volumes |
 | make re | Rebuilds and Restarts containers |
+| make logs | Shows docker compose logs |
+| make users | Creates empty userfiles |
+| make check-users | Checks if userfiles are valid |
 
 ## 3. Managing containers and volumes
 

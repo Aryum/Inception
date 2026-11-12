@@ -31,6 +31,9 @@ Run from Home/Desktop/Inception
 | Clean Build | make clean | Cleans temporary data |
 | Full Clean | make fclean | Cleans everything |
 | Remake | make re | Rebuilds and Restarts services |
+| Logs | make logs | Shows docker compose logs |
+| Users | make users | Creates empty user files |
+| Check Users | make check-users | Checks if username files are valid |
 
 **First launch** It will take longer since wordpress and mariadb need to download and setup some aditional files
 
@@ -47,14 +50,15 @@ The certificate is self-signed, so the browser will show a warning, since it can
 |------|----------|
 | Non-sensitive | srcs/.env |
 | Passwords | secrets |
+| Usernames | secrets |
+
 
 **Existing accounts**
  - Mariadb
   - Root
   - Wordpress
- - Wordpress website
-  - ricsanto (can be changed in env)
-  - santoric (can be changed in env)
+  
+  Wordpress website users must be set in the secrests user.txt file
 
 ## 4.How to check if the services are running correctly
 - docker ps / docker compose ps to check the images that are running

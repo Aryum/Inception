@@ -36,6 +36,8 @@ The certificate is self-signed, so the browser shows a warning. This is expected
 | `make fclean` | Removes everything, including the data (**destructive**) |
 | `make re` | Rebuilds and restarts |
 | `make logs` | Check docker compose logs |
+| `make users` | Creates empty userfiles |
+| `make check-users` | Checks if userfiles are valid |
 
 
 For more detail, see [USER_DOC.md](USER_DOC.md) (using the stack) and [DEV_DOC.md](DEV_DOC.md) (development and maintenance).
@@ -239,8 +241,6 @@ The volume is still managed by Docker, but the data is stored at the path we set
 | Variable | Meaning |
 |----------|---------|
 | DOMAIN_NAME | Website address|
-| WP_BASIC_USER | Wordpress user |
-| WP_ADMIN_USER | Wordpress admin |
 | WP_PORT | Wordpress listening port |
 | MYSQL_PORT | MariaDB listening port |
 | NGINX_PORT | Nginx listening port |

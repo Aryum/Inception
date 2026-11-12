@@ -36,7 +36,8 @@ services:
       - db_wp_pass
       - wp_admin_pass
       - wp_basic_pass
-   
+      - wp_admin_user
+      - wp_basic_user
     restart: unless-stopped
     
 
@@ -87,4 +88,10 @@ secrets:
     file: ../secrets/wp_admin_pass.txt
   wp_basic_pass:
     file: ../secrets/wp_basic_pass.txt
+  wp_admin_user:
+    file: ../secrets/wp_admin_user.txt
+  wp_basic_user:
+    file: ../secrets/wp_basic_user.txt
+
+
 
