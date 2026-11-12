@@ -249,16 +249,6 @@ The volume is still managed by Docker, but the data is stored at the path we set
 | WORDPRESS_DB_NAME | Wordpress database name |
 ---
 
-### `www.conf` explained
-This is a PHP-FPM **pool**: a group of worker processes that run PHP code, with their own settings.
-
-| Directive | Explanation |
-|-----------|-------------|
-| `[www]` | Name of the pool. It can be anything |
-| `user` / `group` | User and group the workers run as. They must match the owner of the WordPress files (`www-data`) |
-| `listen = ${WP_PORT}` | Listens on TCP port 9000. This is the port nginx uses in `fastcgi_pass wordpress:${WP_PORT};` |
-| `listen.owner` / `listen.group` | Owner of the socket file. Only matters when using a unix socket, not with a TCP port |
-
 #### Process management
 `pm` tells PHP-FPM how to manage its workers. It can be:
 - `static`: always runs a fixed number of workers
