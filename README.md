@@ -249,12 +249,6 @@ The volume is still managed by Docker, but the data is stored at the path we set
 | WORDPRESS_DB_NAME | Wordpress database name |
 ---
 
-#### Process management
-`pm` tells PHP-FPM how to manage its workers. It can be:
-- `static`: always runs a fixed number of workers
-- `dynamic`: keeps some ready and creates more if needed (used here)
-- `ondemand`: keeps none up and creates them only when a request arrives
-
 ## Resources
 
 ### Documentation
