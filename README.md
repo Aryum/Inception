@@ -3,6 +3,8 @@
 # Inception
 ---
 
+The project sets up a small web infrastructure with Docker Compose: an Nginx container as the only entrypoint (port 443, TLSv1.2/1.3 only), a WordPress + PHP-FPM container, and a MariaDB container. Each service has its own Dockerfile, is built on `debian:bookworm` (the penultimate stable Debian release), and runs in a dedicated container. No ready-made images are pulled.
+
 ## Instructions
 
 ### Prerequisites
@@ -46,10 +48,7 @@ For more detail, see [USER_DOC.md](USER_DOC.md) (using the stack) and [DEV_DOC.m
 
 ## Project description
 
-### Use of Docker
-The project sets up a small web infrastructure with Docker Compose: an Nginx container as the only entrypoint (port 443, TLSv1.2/1.3 only), a WordPress + PHP-FPM container, and a MariaDB container. Each service has its own Dockerfile, is built on `debian:bookworm` (the penultimate stable Debian release), and runs in a dedicated container. No ready-made images are pulled.
-
-### Sources included
+### Folder structure
 ```
 ├── Makefile                 # builds and manages everything through docker compose
 ├── README.md, USER_DOC.md, DEV_DOC.md
@@ -133,7 +132,7 @@ There are multiple ways to persist data:
 A VM virtualizes hardware through a hypervisor and runs its own kernel, so it is heavy but strongly isolated. A container shares the host kernel and isolates processes with namespaces and cgroups, so it is lighter, faster to start and easier to share, but its isolation is weaker (a kernel vulnerability can reach the host). This project uses a VM as the host environment and Docker for the services inside it, combining both.
 
 **Secrets vs Environment Variables**
-Environment variables are simple, but values written in plain text can leak through `docker inspect`, logs and child processes. Docker secrets are mounted as read-only files in `/run/secrets/` and only given to the containers that need them. This project keeps passwords in secrets and non-sensitive values (domain name, usernames, database name) in `.env`.
+Environment variables are simple, but values written in plain text can leak through `docker inspect`, logs and child processes. Docker secrets are mounted as read-only files in `/run/secrets/` and only given to the containers that need them. This project keeps passwords in secrets and non-sensitive values (domain name, database name) in `.env`.
 
 **Docker Network vs Host Network**
 With a user-defined bridge network, each container has its own IP and namespace, containers reach each other by service name, and only explicitly published ports are exposed. With the host network, the container shares the host's network stack: there is no isolation and port conflicts are possible. This project uses a bridge network so that only Nginx is exposed, and `network: host` is forbidden by the subject.
