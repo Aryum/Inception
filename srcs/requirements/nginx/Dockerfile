@@ -13,7 +13,6 @@ COPY tools/ini_ssl.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/ini_ssl.sh
 
-ARG NGINX_PORT=443
 
 EXPOSE ${NGINX_PORT}
 

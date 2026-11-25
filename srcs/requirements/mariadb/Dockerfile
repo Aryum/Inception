@@ -16,8 +16,6 @@ COPY tools/init_db.sh /usr/local/bin
 
 RUN chmod +x /usr/local/bin/init_db.sh
 
-ARG MYSQL_PORT=3306
-
 EXPOSE ${MYSQL_PORT}
 
 ENTRYPOINT [ "/usr/local/bin/init_db.sh" ]
