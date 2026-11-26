@@ -3,6 +3,7 @@ FROM debian:bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	mariadb-server \
 	gettext-base \
+	iproute2 \
 	&& rm -rf /var/lib/mysql/* \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -15,6 +16,8 @@ COPY conf/50-server.cnf /etc/template/50-server.cnf.template
 COPY tools/init_db.sh /usr/local/bin
 
 RUN chmod +x /usr/local/bin/init_db.sh
+
+ARG MYSQL_PORT=3306
 
 EXPOSE ${MYSQL_PORT}
 

@@ -128,8 +128,13 @@ FLUSH PRIVILEDGES
 
 ### Test http connection
 ```bash
+# add port to end if nginx value is diferent than default value (443)
 curl -v http://ricsanto.42.fr
-#add port to end if its diferent than default value 443
+```
+### Check open ports in the container
+```bash
+#shows tcp udp listening and established ports
+docker exec <container> ss -tua
 ```
 
 ### Full reset (**destructive**)

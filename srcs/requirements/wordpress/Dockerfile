@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	mariadb-client \
 	wget \
 	curl \
+	iproute2 \
 	&& ln -s /usr/sbin/php-fpm8.2 /usr/local/bin/php-fpm \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -29,6 +30,7 @@ RUN curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/bui
 
 RUN chmod +x /usr/local/bin/ini_wp.sh
 
+ARG WP_PORT=9000
 
 EXPOSE ${WP_PORT}
 
